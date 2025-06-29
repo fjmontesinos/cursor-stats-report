@@ -1,5 +1,9 @@
 # 🤖 Cursor AI Analytics - Generador de Informes
 
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![Pandas](https://img.shields.io/badge/pandas-required-orange.svg)](https://pandas.pydata.org/)
+
 Herramienta para generar informes completos de adopción y productividad de Cursor AI en equipos de desarrollo.
 
 ## 📋 Descripción
@@ -194,6 +198,16 @@ El script espera un CSV de Cursor Analytics con estas columnas principales:
 - Planificar programas de adopción
 - Medir impacto en productividad
 - Crear programas de incentivos
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la **MIT License** - consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+### ¿Por qué MIT?
+- ✅ **Uso libre**: Comercial y personal
+- ✅ **Modificación permitida**: Puedes adaptar el código
+- ✅ **Distribución libre**: Comparte sin restricciones
+- ✅ **Sin garantías**: Uso bajo tu responsabilidad
 
 ## 🔧 Resolución de Problemas
 
