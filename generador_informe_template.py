@@ -400,7 +400,7 @@ def generar_tablas_html(metricas):
         'CHART_TABS_SHOWN': json.dumps(chart_tabs_shown, ensure_ascii=False)
     }
 
-def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_report.html", archivo_salida="informe_cursor_analytics.html"):
+def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_report_ux.html", archivo_salida="informe_cursor_analytics.html"):
     """Genera el informe usando la plantilla HTML con placeholders."""
     logger.info(f"📝 Generando informe desde plantilla...")
     
@@ -466,8 +466,8 @@ def main():
     parser.add_argument('archivo_csv', help='Archivo CSV con datos de Cursor')
     parser.add_argument('--salida', '-o', default='informe_cursor_analytics.html', 
                        help='Archivo HTML de salida (default: informe_cursor_analytics.html)')
-    parser.add_argument('--plantilla', '-t', default='cursor_stats_report.html',
-                       help='Archivo de plantilla HTML (default: cursor_stats_report.html)')
+    parser.add_argument('--plantilla', '-t', default='cursor_stats_report_ux.html',
+                       help='Archivo de plantilla HTML (default: cursor_stats_report_ux.html)')
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Activar logging detallado')
     

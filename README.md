@@ -125,12 +125,13 @@ python generador_informe_template.py --help
 ## 📁 Estructura del Proyecto
 
 ```
-cursor-stats/
-├── README.md                          # Este archivo
-├── requisitos.md                      # Especificaciones técnicas
+cursor-stats-report/
+├── README.md                          # Documentación principal
+├── CHANGELOG.md                       # Historial de cambios
+├── LICENSE                            # Licencia MIT
+├── .gitignore                         # Archivos ignorados por Git
 ├── generador_informe_template.py      # Script principal
-├── cursor_stats_report.html           # Plantilla HTML con menú desplegable
-├── informe_cursor_analytics.html      # Informe generado (ejemplo)
+├── cursor_stats_report_ux.html        # Plantilla HTML con diseño UX corporativo
 └── cursor_analytics_*.csv             # Datos de entrada
 ```
 
@@ -246,30 +247,9 @@ Para soporte técnico o consultas:
 - Crear un issue en el repositorio
 - Contactar al equipo de transformación digital
 
-## 🔄 Changelog
+## 📄 Historial de Cambios
 
-### v3.0.0 (Actual)
-- 🧭 **Menú desplegable interactivo** con navegación rápida
-- 🔄 **Métricas de tabs** (aceptados vs mostrados)
-- 📊 **KPIs reorganizados** en 2 filas de 4 métricas
-- 📈 **Gráficos de evolución mejorados** (diarios con múltiples series)
-- 🎨 **27 extensiones con colores** representativos
-- 🎯 **Resumen ejecutivo optimizado** (antes de recomendaciones)
-- 📱 **Responsive mejorado** (4/3/2/1 columnas según dispositivo)
-- ⚡ **UX moderna** con efectos glassmorphism y animaciones
-
-### v2.0.0
-- ✨ Sistema de plantillas HTML con placeholders
-- 🎨 Diseño responsive mejorado
-- 📊 Nuevas métricas de versiones de cliente
-- 🌍 Formato numérico español consistente
-- 🧹 Código refactorizado y optimizado
-
-### v1.0.0
-- 🚀 Primera versión funcional
-- 📈 Métricas básicas de adopción
-- 🏆 Rankings de productividad
-- 📊 Gráficos interactivos
+Para ver el historial completo de cambios, consulta el archivo [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
