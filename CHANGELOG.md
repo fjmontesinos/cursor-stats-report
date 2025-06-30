@@ -4,6 +4,26 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.2.1] - 2025-06-30 - Ordenación Alfabética de Usuarios Inactivos
+
+### 🔧 Improved - Lista de Usuarios Inactivos Ordenada
+- **Mejora de UX**: Los usuarios inactivos ahora se muestran ordenados alfabéticamente
+- **Ubicación**: Sección "⚠️ Usuarios Inactivos" del informe
+- **Beneficio**: Facilita la búsqueda y seguimiento de usuarios específicos
+- **Implementación**: Función `sorted()` aplicada a `usuarios_inactivos_actual`
+
+### 📋 Enhanced - Experiencia de Revisión
+- **Búsqueda rápida**: Encontrar usuarios específicos más fácilmente
+- **Revisión sistemática**: Seguimiento ordenado de usuarios inactivos  
+- **Presentación profesional**: Lista organizada y fácil de leer
+- **Seguimiento mejorado**: Mejor para crear planes de acción por usuario
+
+### 🎯 Technical - Implementación
+- **Código añadido**: `usuarios_inactivos_actual = sorted(usuarios_inactivos_actual)`
+- **Ubicación**: Función `procesar_datos_cursor()` línea ~526
+- **Impacto**: Sin cambios en funcionalidad, solo mejora en presentación
+- **Compatibilidad**: Mantiene todos los datos y métricas existentes
+
 ## [5.2.0] - 2025-06-30 - Sistema de Ayuda Interactivo Completo
 
 ### 🆕 Added - Iconos de Ayuda para Todas las Secciones

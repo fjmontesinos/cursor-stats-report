@@ -525,6 +525,8 @@ def procesar_datos_cursor(archivo_csv, fechas_personalizadas=None):
     todos_usuarios_actual = set(df_actual['Email'].unique())
     usuarios_inactivos_actual = list(todos_usuarios_actual - usuarios_con_actividad_actual)
     usuarios_inactivos_actual = [email for email in usuarios_inactivos_actual if pd.notna(email) and email.strip()]
+    # Ordenar alfabéticamente los usuarios inactivos
+    usuarios_inactivos_actual = sorted(usuarios_inactivos_actual)
     
     # Rankings del período actual
     # Top productividad con líneas totales (Added + Deleted)
