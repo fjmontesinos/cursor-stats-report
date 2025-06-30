@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Cursor AI Analytics - Informe de Productividad</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -890,12 +893,16 @@
                 
                 <div class="help-content-grid">
                     <div class="help-content-column">
-                        <h4>📈 Métricas principales:</h4>
+                        <h4>📈 Métricas principales (en orden de aparición):</h4>
                         <ul>
-                            <li><strong>Líneas de Código IA:</strong> Total de líneas aceptadas (Added + Deleted)</li>
-                            <li><strong>Tasa de Aceptación:</strong> % de líneas sugeridas que se aceptaron</li>
-                            <li><strong>Usuarios Activos:</strong> Usuarios que utilizaron IA en el período</li>
-                            <li><strong>Peticiones Totales:</strong> Suma de todas las interacciones con IA</li>
+                            <li><strong>1. Líneas de Código IA:</strong> Total de líneas aceptadas (Added + Deleted)</li>
+                            <li><strong>2. Tasa de Aceptación:</strong> % de líneas sugeridas que se aceptaron</li>
+                            <li><strong>3. Tabs Aceptados:</strong> Número de autocompletados utilizados</li>
+                            <li><strong>4. Eficiencia Tabs:</strong> Ratio de tabs aceptados vs mostrados</li>
+                            <li><strong>5. Peticiones Totales:</strong> Suma de todas las interacciones con IA</li>
+                            <li><strong>6. Promedio/Usuario:</strong> Líneas de código IA por usuario activo</li>
+                            <li><strong>7. Usuarios Activos:</strong> Usuarios que utilizaron IA en el período</li>
+                            <li><strong>8. Usuarios Inactivos:</strong> Usuarios registrados sin actividad IA</li>
                         </ul>
 
                         <h4>🎯 Indicadores comparativos:</h4>
@@ -908,19 +915,22 @@
                     </div>
 
                     <div class="help-content-column">
-                        <h4>🔍 Cómo interpretar:</h4>
+                        <h4>🔍 Cómo interpretar los KPIs:</h4>
                         <ul>
-                            <li><strong>Eficiencia Tabs:</strong> Ratio de tabs aceptados vs mostrados</li>
-                            <li><strong>Promedio/Usuario:</strong> Líneas de código IA por usuario activo</li>
-                            <li><strong>Tasa Adopción:</strong> % de usuarios totales que usan IA</li>
+                            <li><strong>Tendencias crecientes:</strong> Mayor adopción y productividad</li>
+                            <li><strong>Alta tasa de aceptación:</strong> IA proporciona sugerencias útiles</li>
+                            <li><strong>Usuarios activos estables:</strong> Base comprometida con la herramienta</li>
+                            <li><strong>Promedio alto por usuario:</strong> Uso intensivo y efectivo</li>
+                            <li><strong>Baja cantidad de inactivos:</strong> Buena adopción del equipo</li>
                         </ul>
 
                         <div style="background: rgba(39, 174, 96, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--success);">
                             <h4 style="color: var(--success); margin-top: 0;">✅ Objetivos recomendados:</h4>
                             <ul style="margin-bottom: 0;">
                                 <li>Tasa de aceptación >45%</li>
-                                <li>Adopción >70%</li>
                                 <li>Eficiencia tabs >15%</li>
+                                <li>Adopción >70% (activos vs total)</li>
+                                <li>Promedio >1,500 líneas/usuario</li>
                             </ul>
                         </div>
                     </div>
@@ -1035,10 +1045,12 @@
                     <div class="help-content-column">
                         <h4>🤖 Modelos disponibles:</h4>
                         <ul>
-                            <li><strong>GPT-4:</strong> Modelo premium para tareas complejas</li>
-                            <li><strong>Claude:</strong> Excelente para análisis y razonamiento</li>
-                            <li><strong>GPT-3.5:</strong> Rápido y eficiente para tareas básicas</li>
-                            <li><strong>Otros:</strong> Modelos especializados</li>
+                            <li><strong>claude-4-sonnet-thinking:</strong> Modelo Claude 4 con capacidades de razonamiento avanzado</li>
+                            <li><strong>claude-3.5-sonnet:</strong> Versión optimizada de Claude 3.5 para productividad</li>
+                            <li><strong>claude-4-sonnet:</strong> Claude 4 estándar para tareas complejas</li>
+                            <li><strong>default:</strong> Modelo por defecto del sistema</li>
+                            <li><strong>gemini-2.5-pro-preview:</strong> Modelo Gemini en versión preview</li>
+                            <li><strong>claude-3.7-sonnet:</strong> Versión experimental de Claude</li>
                         </ul>
 
                         <h4>📊 Cálculo del uso:</h4>
@@ -1078,17 +1090,28 @@
                     <div class="help-content-column">
                         <h4>📊 Métricas incluidas:</h4>
                         <ul>
-                            <li><strong>Total Accepted Lines:</strong> Líneas de código IA aceptadas</li>
-                            <li><strong>Total Suggested Lines:</strong> Líneas totales sugeridas por IA</li>
-                            <li><strong>Total Requests:</strong> Número de peticiones a la IA</li>
-                            <li><strong>Acceptance Rate:</strong> % de líneas sugeridas que se aceptaron</li>
+                            <li><strong>Líneas Aceptadas Totales:</strong> Código IA incorporado (añadido + eliminado)</li>
+                            <li><strong>Líneas Sugeridas Totales:</strong> Total de código propuesto por IA</li>
+                            <li><strong>Peticiones Totales:</strong> Número de interacciones con la IA</li>
+                            <li><strong>Tasa de Aceptación:</strong> % de líneas sugeridas que se aceptaron</li>
                         </ul>
 
-                        <h4>🎯 Ordenación:</h4>
-                        <p>Los usuarios están ordenados por <strong>Total Accepted Lines</strong> (líneas aceptadas) de mayor a menor.</p>
+                        <h4>🎯 Criterio de ordenación:</h4>
+                        <p>Los usuarios están ordenados por <strong>Líneas Aceptadas Totales</strong> de mayor a menor.</p>
+                        
+                        <h4>🔢 Cálculo de Líneas Aceptadas:</h4>
+                        <code style="background: var(--background-gray); padding: 8px; border-radius: 4px; display: block; margin: 8px 0;">
+                            Total = Líneas Añadidas + Líneas Eliminadas
+                        </code>
+                        <p style="font-size: 0.9em; color: var(--text-secondary);">
+                            <em>Incluye tanto código nuevo como código eliminado por sugerencias de IA</em>
+                        </p>
                     </div>
 
                     <div class="help-content-column">
+                        <h4>🏆 Top 10 usuarios:</h4>
+                        <p>Se muestran los 10 usuarios con mayor número de líneas aceptadas del período actual.</p>
+
                         <h4>🔍 Análisis estratégico:</h4>
                         <ul>
                             <li><strong>Power Users:</strong> Identificar usuarios más productivos</li>
@@ -1097,9 +1120,17 @@
                             <li><strong>Formación:</strong> Detectar necesidades de training</li>
                         </ul>
 
+                        <h4>📈 Interpretación de niveles:</h4>
+                        <ul>
+                            <li><strong>>10,000 líneas:</strong> Usuario altamente productivo</li>
+                            <li><strong>5,000-10,000:</strong> Usuario muy activo</li>
+                            <li><strong>1,000-5,000:</strong> Usuario activo regular</li>
+                            <li><strong><1,000:</strong> Usuario ocasional</li>
+                        </ul>
+
                         <div style="background: rgba(39, 174, 96, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--success);">
                             <h4 style="color: var(--success); margin-top: 0;">💡 Insight clave:</h4>
-                            <p style="margin-bottom: 0;">Los usuarios con alta tasa de aceptación (>50%) son candidatos ideales para ser mentores internos de IA.</p>
+                            <p style="margin-bottom: 0;">Los usuarios con alta productividad y buena tasa de aceptación (>50%) son candidatos ideales para ser mentores internos de IA.</p>
                         </div>
                     </div>
                 </div>
@@ -1115,28 +1146,34 @@
                 <button class="help-modal-close" onclick="closeHelpModal('power-users-help')">&times;</button>
             </div>
             <div class="help-modal-body">
-                <p><strong>Esta tabla identifica a los usuarios más avanzados en el uso de IA, con métricas de alto rendimiento.</strong></p>
+                <p><strong>Esta tabla identifica a los usuarios más avanzados en el uso de IA, ordenados por su nivel de interacción total con la herramienta.</strong></p>
                 
                 <div class="help-content-grid">
                     <div class="help-content-column">
-                        <h4>🏅 Criterios Power User:</h4>
+                        <h4>📊 Criterio de ranking:</h4>
+                        <p><strong>Los usuarios están ordenados por "Peticiones Totales" de mayor a menor.</strong></p>
+                        
+                        <h4>🔢 Cálculo de Peticiones Totales:</h4>
                         <ul>
-                            <li><strong>Líneas Aceptadas:</strong> >1000 líneas en el período</li>
-                            <li><strong>Tasa Aceptación:</strong> >40% de eficiencia</li>
-                            <li><strong>Uso Consistente:</strong> Actividad regular</li>
-                            <li><strong>Diversidad:</strong> Uso de múltiples funciones</li>
+                            <li><strong>Edit Requests:</strong> Solicitudes de edición de código</li>
+                            <li><strong>Ask Requests:</strong> Preguntas al asistente de IA</li>
+                            <li><strong>Agent Requests:</strong> Uso del agente inteligente</li>
+                            <li><strong>Cmd+K Usages:</strong> Comandos rápidos</li>
+                            <li><strong>Subscription Included Reqs:</strong> Peticiones incluidas</li>
+                            <li><strong>API Key Reqs:</strong> Peticiones vía API</li>
+                            <li><strong>Usage Based Reqs:</strong> Peticiones por uso</li>
                         </ul>
 
-                        <h4>📈 Métricas mostradas:</h4>
-                        <ul>
-                            <li>Total de líneas aceptadas</li>
-                            <li>Tasa de aceptación</li>
-                            <li>Días activos en el período</li>
-                            <li>Promedio líneas/día</li>
-                        </ul>
+                        <h4>🎯 Fórmula del ranking:</h4>
+                        <code style="background: var(--background-gray); padding: 8px; border-radius: 4px; display: block; margin: 8px 0;">
+                            Total = Edit + Ask + Agent + Cmd+K + Subscription + API + Usage
+                        </code>
                     </div>
 
                     <div class="help-content-column">
+                        <h4>🏆 Top 10 usuarios:</h4>
+                        <p>Se muestran los 10 usuarios con mayor número de peticiones totales del período actual.</p>
+
                         <h4>🎯 Valor estratégico:</h4>
                         <ul>
                             <li><strong>Mentores:</strong> Pueden formar a otros desarrolladores</li>
@@ -1145,9 +1182,17 @@
                             <li><strong>Casos de éxito:</strong> Ejemplos de buenas prácticas</li>
                         </ul>
 
+                        <h4>📈 Interpretación:</h4>
+                        <ul>
+                            <li><strong>>500 peticiones:</strong> Usuario muy activo</li>
+                            <li><strong>300-500:</strong> Usuario activo regular</li>
+                            <li><strong>100-300:</strong> Usuario moderado</li>
+                            <li><strong><100:</strong> Usuario ocasional</li>
+                        </ul>
+
                         <div style="background: rgba(155, 89, 182, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid #9B59B6;">
-                            <h4 style="color: #9B59B6; margin-top: 0;">🚀 Programa Power Users:</h4>
-                            <p style="margin-bottom: 0;">Considera crear un programa especial para estos usuarios: acceso anticipado, feedback directo, reconocimiento interno.</p>
+                            <h4 style="color: #9B59B6; margin-top: 0;">💡 Insight clave:</h4>
+                            <p style="margin-bottom: 0;">Los usuarios con más peticiones suelen ser los más experimentados y pueden liderar la adopción de IA en sus equipos.</p>
                         </div>
                     </div>
                 </div>
@@ -1202,44 +1247,52 @@
     <div id="cohorts-help" class="help-modal">
         <div class="help-modal-content">
             <div class="help-modal-header">
-                <h3 class="help-modal-title">👥 Análisis de Cohortes - Información Detallada</h3>
+                <h3 class="help-modal-title">👥 Análisis de Cohortes de Usuarios - Información Detallada</h3>
                 <button class="help-modal-close" onclick="closeHelpModal('cohorts-help')">&times;</button>
             </div>
             <div class="help-modal-body">
-                <p><strong>El análisis de cohortes segmenta a los usuarios según su nivel de actividad y compromiso con la IA.</strong></p>
+                <p><strong>El análisis de cohortes compara la actividad de usuarios entre el período actual y el anterior para identificar patrones de comportamiento.</strong></p>
                 
                 <div class="help-content-grid">
                     <div class="help-content-column">
                         <h4>🏷️ Definición de cohortes:</h4>
                         <ul>
-                            <li><strong>🔥 Heavy Users:</strong> >2000 líneas aceptadas</li>
-                            <li><strong>⚡ Active Users:</strong> 500-2000 líneas aceptadas</li>
-                            <li><strong>🌱 Light Users:</strong> 100-500 líneas aceptadas</li>
-                            <li><strong>👀 Explorers:</strong> 1-100 líneas aceptadas</li>
-                            <li><strong>😴 Inactive:</strong> 0 líneas aceptadas</li>
+                            <li><strong>💎 Usuarios Consistentes:</strong> Activos en ambos períodos (anterior y actual)</li>
+                            <li><strong>🌟 Usuarios Nuevos:</strong> Solo activos en el período actual (nuevas incorporaciones)</li>
+                            <li><strong>🔄 Usuarios Reactivados:</strong> Inactivos en período anterior, activos en actual</li>
+                            <li><strong>⚠️ Usuarios Perdidos:</strong> Activos en período anterior, inactivos en actual</li>
+                            <li><strong>📊 Tasa de Retención:</strong> % de usuarios que se mantienen activos</li>
                         </ul>
 
-                        <h4>📊 Métricas por cohorte:</h4>
+                        <h4>📈 Cálculo de métricas:</h4>
                         <ul>
-                            <li>Número de usuarios</li>
-                            <li>% del total de usuarios</li>
-                            <li>Promedio líneas/usuario</li>
+                            <li><strong>Consistentes:</strong> Usuarios en ambos períodos</li>
+                            <li><strong>Nuevos:</strong> Solo en período actual</li>
+                            <li><strong>Reactivados:</strong> Vuelven tras inactividad</li>
+                            <li><strong>Retención:</strong> (Consistentes / Total anterior) × 100</li>
                         </ul>
                     </div>
 
                     <div class="help-content-column">
                         <h4>🎯 Estrategias por cohorte:</h4>
                         <ul>
-                            <li><strong>Heavy Users:</strong> Programas de reconocimiento, beta testing</li>
-                            <li><strong>Active Users:</strong> Formación avanzada, casos de uso complejos</li>
-                            <li><strong>Light Users:</strong> Tutoriales, mejores prácticas</li>
-                            <li><strong>Explorers:</strong> Onboarding, formación básica</li>
-                            <li><strong>Inactive:</strong> Campañas de activación, demos</li>
+                            <li><strong>Usuarios Consistentes:</strong> Mantener engagement, programas de fidelización</li>
+                            <li><strong>Usuarios Nuevos:</strong> Onboarding efectivo, formación inicial</li>
+                            <li><strong>Usuarios Reactivados:</strong> Reforzar hábitos, casos de éxito</li>
+                            <li><strong>Usuarios Perdidos:</strong> Campañas de reactivación, identificar barreras</li>
                         </ul>
 
-                        <div style="background: rgba(231, 76, 60, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--danger);">
-                            <h4 style="color: var(--danger); margin-top: 0;">⚠️ Objetivo:</h4>
-                            <p style="margin-bottom: 0;">Reducir usuarios inactivos y mover usuarios hacia cohortes más activas mediante formación y soporte dirigido.</p>
+                        <h4>📊 Interpretación de la tasa:</h4>
+                        <ul>
+                            <li><strong>>90%:</strong> Excelente retención</li>
+                            <li><strong>80-90%:</strong> Buena retención</li>
+                            <li><strong>70-80%:</strong> Retención aceptable</li>
+                            <li><strong><70%:</strong> Requiere atención</li>
+                        </ul>
+
+                        <div style="background: rgba(39, 174, 96, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--success);">
+                            <h4 style="color: var(--success); margin-top: 0;">🎯 Objetivo clave:</h4>
+                            <p style="margin-bottom: 0;">Maximizar usuarios consistentes y reactivados, minimizar usuarios perdidos para asegurar adopción sostenible de IA.</p>
                         </div>
                     </div>
                 </div>
@@ -1251,6 +1304,29 @@
         // Configuración corporativa
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.color = '#6C757D';
+        
+        // Desactivar formateo automático de Chart.js para usar nuestro formateo personalizado
+        Chart.defaults.locale = 'es-ES';
+
+        // Función helper para formateo consistente de números españoles - Actualizado: 2024-12-19
+        function formatNumberES(value) {
+            // Asegurar que el valor es un número entero y formatearlo correctamente
+            const numValue = parseInt(value) || 0;
+            const formatted = new Intl.NumberFormat('es-ES').format(numValue);
+            console.log(`formatNumberES: ${value} -> ${numValue} -> ${formatted}`); // Debug
+            return formatted;
+        }
+
+        function formatPercentageES(value) {
+            // Asegurar que el valor es un número y formatearlo correctamente
+            const numValue = parseFloat(value) || 0;
+            const formatted = new Intl.NumberFormat('es-ES', { 
+                minimumFractionDigits: 1, 
+                maximumFractionDigits: 1 
+            }).format(numValue);
+            console.log(`formatPercentageES: ${value} -> ${numValue} -> ${formatted}`); // Debug
+            return formatted;
+        }
 
         const colors = {
             primary: '#1B365D',
@@ -1266,7 +1342,7 @@
             data: {
                 labels: {{CHART_EVOLUTION_LABELS}},
                 datasets: [{
-                    label: 'Total Accepted Lines',
+                    label: 'Líneas Aceptadas Totales',
                     data: {{CHART_EVOLUTION_ACCEPTED}},
                     borderColor: colors.primary,
                     backgroundColor: colors.primary + '20',
@@ -1274,7 +1350,7 @@
                     fill: true,
                     tension: 0.3
                 }, {
-                    label: 'Total Suggested Lines',
+                    label: 'Líneas Sugeridas Totales',
                     data: {{CHART_EVOLUTION_SUGGESTED}},
                     borderColor: colors.accent,
                     borderWidth: 2,
@@ -1312,18 +1388,23 @@
                         titleFont: { size: 14, weight: 'bold' },
                         bodyFont: { size: 13 },
                         padding: 12,
+                        usePointStyle: false,
+                        filter: function(tooltipItem) {
+                            return true; // Mostrar todos los elementos
+                        },
                         callbacks: {
                             title: function(context) {
                                 return context[0].label;
                             },
                             label: function(context) {
-                                const value = context.parsed.y;
-                                const formattedValue = new Intl.NumberFormat('es-ES').format(value);
+                                // Forzar el uso de nuestro formateo personalizado
+                                const value = parseInt(context.parsed.y) || 0;
+                                const formattedValue = formatNumberES(value);
                                 
-                                if (context.dataset.label === 'Total Accepted Lines') {
-                                    return `📈 Total Accepted Lines: ${formattedValue}`;
-                                } else if (context.dataset.label === 'Total Suggested Lines') {
-                                    return `💡 Total Suggested Lines: ${formattedValue}`;
+                                if (context.dataset.label === 'Líneas Aceptadas Totales') {
+                                    return `📈 Líneas Aceptadas Totales: ${formattedValue}`;
+                                } else if (context.dataset.label === 'Líneas Sugeridas Totales') {
+                                    return `💡 Líneas Sugeridas Totales: ${formattedValue}`;
                                 } else if (context.dataset.label === 'Usuarios Activos') {
                                     return `👥 Usuarios Activos: ${formattedValue}`;
                                 }
@@ -1331,10 +1412,11 @@
                             },
                             afterBody: function(context) {
                                 // Calcular tasa de aceptación para este punto
-                                const accepted = context.find(c => c.dataset.label === 'Total Accepted Lines')?.parsed.y || 0;
-                                const suggested = context.find(c => c.dataset.label === 'Total Suggested Lines')?.parsed.y || 0;
-                                const acceptanceRate = suggested > 0 ? ((accepted / suggested) * 100).toFixed(1) : '0.0';
-                                return [``, `✅ Tasa de Aceptación: ${acceptanceRate}%`];
+                                const accepted = parseInt(context.find(c => c.dataset.label === 'Líneas Aceptadas Totales')?.parsed.y) || 0;
+                                const suggested = parseInt(context.find(c => c.dataset.label === 'Líneas Sugeridas Totales')?.parsed.y) || 0;
+                                const acceptanceRate = suggested > 0 ? ((accepted / suggested) * 100) : 0;
+                                const formattedRate = formatPercentageES(acceptanceRate);
+                                return [``, `✅ Tasa de Aceptación: ${formattedRate}%`];
                             }
                         }
                     }
@@ -1421,13 +1503,18 @@
                         titleFont: { size: 14, weight: 'bold' },
                         bodyFont: { size: 13 },
                         padding: 12,
+                        usePointStyle: false,
+                        filter: function(tooltipItem) {
+                            return true; // Mostrar todos los elementos
+                        },
                         callbacks: {
                             title: function(context) {
                                 return context[0].label;
                             },
                             label: function(context) {
-                                const value = context.parsed.y;
-                                const formattedValue = new Intl.NumberFormat('es-ES').format(value);
+                                // Forzar el uso de nuestro formateo personalizado
+                                const value = parseInt(context.parsed.y) || 0;
+                                const formattedValue = formatNumberES(value);
                                 
                                 if (context.dataset.label === 'Tabs Aceptados') {
                                     return `⚡ Tabs Aceptados: ${formattedValue}`;
@@ -1438,10 +1525,11 @@
                             },
                             afterBody: function(context) {
                                 // Calcular eficiencia de tabs para este punto
-                                const accepted = context.find(c => c.dataset.label === 'Tabs Aceptados')?.parsed.y || 0;
-                                const shown = context.find(c => c.dataset.label === 'Tabs Mostrados')?.parsed.y || 0;
-                                const efficiency = shown > 0 ? ((accepted / shown) * 100).toFixed(1) : '0.0';
-                                return [``, `📊 Eficiencia Tabs: ${efficiency}%`];
+                                const accepted = parseInt(context.find(c => c.dataset.label === 'Tabs Aceptados')?.parsed.y) || 0;
+                                const shown = parseInt(context.find(c => c.dataset.label === 'Tabs Mostrados')?.parsed.y) || 0;
+                                const efficiency = shown > 0 ? ((accepted / shown) * 100) : 0;
+                                const formattedEfficiency = formatPercentageES(efficiency);
+                                return [``, `📊 Eficiencia Tabs: ${formattedEfficiency}%`];
                             }
                         }
                     }
