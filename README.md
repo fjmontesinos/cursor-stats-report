@@ -136,7 +136,8 @@ Este proyecto analiza los datos de uso de Cursor AI y genera informes HTML inter
 ### Requisitos
 - Python 3.7+
 - pandas
-- Archivo CSV de Cursor Analytics con **el doble de días** del período a analizar
+- Archivo CSV de Cursor Analytics (modo automático: doble de días del período a analizar)
+- Para fechas personalizadas: CSV que contenga todas las fechas especificadas
 
 ### Instalar dependencias
 ```bash
@@ -145,12 +146,25 @@ pip install pandas
 
 ## 📖 Uso
 
-### Comando Básico
+### Modo Automático (División Automática)
 ```bash
+# Comando básico - divide automáticamente el CSV en dos períodos
 python generador_informe_template.py archivo_cursor_analytics.csv
 ```
 
+### Modo Manual (Fechas Personalizadas) 🆕
+```bash
+# Especificar fechas exactas para análisis personalizado
+python generador_informe_template.py archivo_cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 \
+  --fecha-fin-actual 2025-06-29 \
+  --fecha-inicio-anterior 2025-06-02 \
+  --fecha-fin-anterior 2025-06-15
+```
+
 ### Ejemplos de Uso Temporal
+
+#### División Automática
 ```bash
 # Analizar últimos 15 días (requiere CSV de 30 días)
 python generador_informe_template.py cursor_analytics_30_dias.csv
@@ -162,23 +176,83 @@ python generador_informe_template.py cursor_analytics_14_dias.csv
 python generador_informe_template.py cursor_analytics_60_dias.csv
 ```
 
-### Opciones Avanzadas
+#### Fechas Personalizadas 🆕
 ```bash
-# Especificar archivo de salida personalizado
-python generador_informe_template.py datos.csv --salida mi_informe.html
+# Comparar segunda quincena de junio vs primera quincena
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 \
+  --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-06-01 \
+  --fecha-fin-anterior 2025-06-15 \
+  --salida informe_quincenas_junio.html
 
-# Usar plantilla personalizada
-python generador_informe_template.py datos.csv --plantilla mi_plantilla.html
+# Comparar último trimestre vs trimestre anterior
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-04-01 \
+  --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-01-01 \
+  --fecha-fin-anterior 2025-03-31 \
+  --salida comparativa_trimestres.html
 
-# Ejemplo completo
-python generador_informe_template.py cursor_analytics_2025.csv \
-  --salida informe_enero_2025.html \
-  --plantilla plantilla_corporativa.html
+# Análisis de sprint específico vs sprint anterior
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 \
+  --fecha-fin-actual 2025-06-29 \
+  --fecha-inicio-anterior 2025-06-02 \
+  --fecha-fin-anterior 2025-06-15 \
+  --salida sprint_comparison.html \
+  --verbose
 ```
 
-### Ayuda
+### Opciones de Línea de Comandos
+
+#### Parámetros Básicos
+| Parámetro | Descripción | Ejemplo |
+|-----------|-------------|---------|
+| `archivo_csv` | **(Obligatorio)** Archivo CSV con datos de Cursor | `cursor_analytics.csv` |
+| `--salida` o `-o` | Archivo HTML de salida | `--salida mi_informe.html` |
+| `--plantilla` o `-t` | Plantilla HTML personalizada | `--plantilla mi_plantilla.html` |
+| `--verbose` o `-v` | Logging detallado para debugging | `--verbose` |
+
+#### Parámetros de Fechas Personalizadas 🆕
+| Parámetro | Descripción | Formato | Ejemplo |
+|-----------|-------------|---------|---------|
+| `--fecha-inicio-actual` | Fecha inicio período actual | YYYY-MM-DD | `2025-06-16` |
+| `--fecha-fin-actual` | Fecha fin período actual | YYYY-MM-DD | `2025-06-29` |
+| `--fecha-inicio-anterior` | Fecha inicio período anterior | YYYY-MM-DD | `2025-06-02` |
+| `--fecha-fin-anterior` | Fecha fin período anterior | YYYY-MM-DD | `2025-06-15` |
+
+#### Reglas de Fechas Personalizadas
+- **Todas las 4 fechas requeridas**: Si usas una fecha personalizada, debes especificar las 4
+- **Formato obligatorio**: YYYY-MM-DD (año-mes-día)
+- **Fechas existentes**: Las fechas deben existir en tu archivo CSV
+- **Sin solapamiento**: Los períodos no pueden solaparse entre sí
+
+### Opciones Avanzadas
 ```bash
+# Ejemplo completo con todas las opciones
+python generador_informe_template.py cursor_analytics_2025.csv \
+  --fecha-inicio-actual 2025-06-01 \
+  --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-05-01 \
+  --fecha-fin-anterior 2025-05-31 \
+  --salida informe_junio_vs_mayo.html \
+  --plantilla plantilla_corporativa.html \
+  --verbose
+```
+
+### Ayuda y Documentación
+```bash
+# Ver todas las opciones disponibles
 python generador_informe_template.py --help
+
+# Ejemplo de salida de ayuda
+usage: generador_informe_template.py [-h] [--salida SALIDA] [--plantilla PLANTILLA] [--verbose]
+                                      [--fecha-inicio-actual FECHA_INICIO_ACTUAL]
+                                      [--fecha-fin-actual FECHA_FIN_ACTUAL]
+                                      [--fecha-inicio-anterior FECHA_INICIO_ANTERIOR]
+                                      [--fecha-fin-anterior FECHA_FIN_ANTERIOR]
+                                      archivo_csv
 ```
 
 ## 📁 Estructura del Proyecto
@@ -280,22 +354,77 @@ Fecha        | Usuario | Líneas | Tabs | ...
 - **Identificar tendencias**: Detectar patrones de adopción
 - **Seguir cohortes**: Monitorear retención de usuarios
 - **Motivar adopción**: Mostrar impacto real con datos comparativos
+- **🆕 Análisis de sprints**: Comparar sprints específicos con fechas exactas
+- **🆕 Evaluación de releases**: Impacto antes/después de nuevas versiones
 
 ### Para Managers y CTOs
 - **Medir ROI temporal**: Evolución de la inversión en IA
 - **Planificar expansión**: Basado en tendencias de crecimiento
 - **Identificar riesgos**: Usuarios perdidos y en riesgo
 - **Reportar progreso**: Métricas comparativas para dirección
+- **🆕 Análisis trimestral**: Comparativas exactas entre trimestres
+- **🆕 Evaluación de objetivos**: Seguimiento de KPIs en períodos específicos
 
 ### Para Recursos Humanos
 - **Programas de retención**: Basados en análisis de cohortes
 - **Formación dirigida**: Para usuarios nuevos y reactivados
 - **Seguimiento de impacto**: Evolución de productividad individual
 - **Planificación de recursos**: Basada en tendencias de adopción
+- **🆕 Evaluaciones de desempeño**: Períodos específicos de evaluación
+- **🆕 Onboarding tracking**: Seguimiento de nuevos empleados en fechas exactas
+
+### Casos de Uso Específicos con Fechas Personalizadas 🆕
+
+#### Análisis de Sprints Ágiles
+```bash
+# Sprint 12 vs Sprint 11 (2 semanas cada uno)
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 --fecha-fin-actual 2025-06-29 \
+  --fecha-inicio-anterior 2025-06-02 --fecha-fin-anterior 2025-06-15 \
+  --salida sprint_12_vs_11.html
+```
+
+#### Comparativa de Trimestres
+```bash
+# Q2 2025 vs Q1 2025
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-04-01 --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-01-01 --fecha-fin-anterior 2025-03-31 \
+  --salida Q2_vs_Q1_2025.html
+```
+
+#### Análisis Pre/Post Implementación
+```bash
+# 30 días después de implementar Cursor vs 30 días antes
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-01 --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-04-01 --fecha-fin-anterior 2025-04-30 \
+  --salida impacto_implementacion.html
+```
+
+#### Evaluación de Vacaciones/Festivos
+```bash
+# Comparar productividad en períodos laborales vs períodos con festivos
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-01 --fecha-fin-actual 2025-06-15 \
+  --fecha-inicio-anterior 2025-05-01 --fecha-fin-anterior 2025-05-15 \
+  --salida productividad_sin_festivos.html
+```
+
+#### Análisis de Equipos Específicos
+```bash
+# Comparar antes/después de formación en IA para el equipo
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-15 --fecha-fin-actual 2025-06-30 \
+  --fecha-inicio-anterior 2025-06-01 --fecha-fin-anterior 2025-06-14 \
+  --salida post_formacion_ia.html
+```
 
 ## 🔧 Funcionalidades Técnicas
 
-### División Automática de Períodos
+### Doble Modo de Operación 🆕
+
+#### Modo Automático (División Automática)
 ```python
 def dividir_periodos_temporales(df):
     """
@@ -305,6 +434,26 @@ def dividir_periodos_temporales(df):
     """
     # Implementación con división entera y ordenación temporal
 ```
+
+#### Modo Manual (Fechas Personalizadas) 🆕
+```python
+def dividir_periodos_personalizados(df, fechas_personalizadas):
+    """
+    Divide el DataFrame usando fechas específicas:
+    - Período anterior: fechas definidas por el usuario
+    - Período actual: fechas definidas por el usuario
+    - Validación automática de zona horaria (UTC compatible)
+    """
+    # Detección automática de zona horaria para compatibilidad
+    tz = df['Date'].dt.tz if hasattr(df['Date'].dt, 'tz') and df['Date'].dt.tz is not None else None
+    # Creación de timestamps compatibles con el DataFrame
+```
+
+### Compatibilidad de Zona Horaria 🔧
+- **Detección automática**: Identifica si el CSV tiene zona horaria UTC
+- **Compatibilidad total**: Funciona con CSVs con y sin zona horaria
+- **Error resuelto**: Soluciona `TypeError: Invalid comparison between dtype=datetime64[ns, UTC] and Timestamp`
+- **Robustez**: Manejo automático de diferentes formatos de fecha
 
 ### Análisis de Cohortes
 ```python
@@ -329,6 +478,18 @@ def generar_textos_alternativos_kpis(metricas):
     """
 ```
 
+### Validación de Fechas
+```python
+def validar_y_parsear_fechas(fecha_inicio_actual, fecha_fin_actual, fecha_inicio_anterior, fecha_fin_anterior, df):
+    """
+    Valida fechas personalizadas:
+    - Formato YYYY-MM-DD obligatorio
+    - Verificación de existencia en dataset
+    - Detección de solapamiento de períodos
+    - Manejo completo de errores
+    """
+```
+
 ---
 
-**📊 Cursor AI Analytics** - Transformando equipos de desarrollo con análisis comparativo temporal desde 2025 
+**📊 Cursor AI Analytics** - Transformando equipos de desarrollo con análisis comparativo temporal automático y fechas personalizadas desde 2025 🚀 
