@@ -149,6 +149,34 @@ def formato_numero_espanol(numero):
             return f"{numero:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
     return str(numero)
 
+def formatear_fecha_espanol(fecha, formato_corto=False):
+    """Formatea una fecha en español."""
+    if fecha is None:
+        return "N/A"
+    
+    meses_espanol = {
+        'January': 'enero', 'February': 'febrero', 'March': 'marzo', 'April': 'abril',
+        'May': 'mayo', 'June': 'junio', 'July': 'julio', 'August': 'agosto',
+        'September': 'septiembre', 'October': 'octubre', 'November': 'noviembre', 'December': 'diciembre'
+    }
+    
+    meses_espanol_corto = {
+        'Jan': 'ene', 'Feb': 'feb', 'Mar': 'mar', 'Apr': 'abr',
+        'May': 'may', 'Jun': 'jun', 'Jul': 'jul', 'Aug': 'ago',
+        'Sep': 'sep', 'Oct': 'oct', 'Nov': 'nov', 'Dec': 'dic'
+    }
+    
+    if formato_corto:
+        fecha_str = fecha.strftime('%d %b')
+        for mes_en, mes_es in meses_espanol_corto.items():
+            fecha_str = fecha_str.replace(mes_en, mes_es)
+    else:
+        fecha_str = fecha.strftime('%d %B %Y')
+        for mes_en, mes_es in meses_espanol.items():
+            fecha_str = fecha_str.replace(mes_en, mes_es)
+    
+    return fecha_str
+
 def dividir_periodos_temporales(df):
     """Divide el DataFrame en dos períodos: anterior (primera mitad) y actual (segunda mitad)."""
     # Ordenar por fecha
@@ -457,11 +485,11 @@ def procesar_datos_cursor(archivo_csv):
     evolucion_diaria['Chat Suggested Lines Total'] = evolucion_diaria['Chat Suggested Lines Added'] + evolucion_diaria['Chat Suggested Lines Deleted']
     evolucion_diaria = evolucion_diaria.sort_values('Date')
     
-    # Fechas formateadas
-    fecha_inicio_actual = info_division['periodo_actual_inicio'].strftime('%d %B %Y') if info_division['periodo_actual_inicio'] else "N/A"
-    fecha_fin_actual = info_division['periodo_actual_fin'].strftime('%d %B %Y') if info_division['periodo_actual_fin'] else "N/A"
-    fecha_inicio_anterior = info_division['periodo_anterior_inicio'].strftime('%d %B %Y') if info_division['periodo_anterior_inicio'] else "N/A"
-    fecha_fin_anterior = info_division['periodo_anterior_fin'].strftime('%d %B %Y') if info_division['periodo_anterior_fin'] else "N/A"
+    # Fechas formateadas en español
+    fecha_inicio_actual = formatear_fecha_espanol(info_division['periodo_actual_inicio'])
+    fecha_fin_actual = formatear_fecha_espanol(info_division['periodo_actual_fin'])
+    fecha_inicio_anterior = formatear_fecha_espanol(info_division['periodo_anterior_inicio'])
+    fecha_fin_anterior = formatear_fecha_espanol(info_division['periodo_anterior_fin'])
     
     return {
         'periodo': {
@@ -736,7 +764,7 @@ def generar_tablas_html(metricas):
     
     # Datos para gráfico de evolución temporal (sanitizados)
     evolucion_df = metricas['evolucion']
-    chart_evolution_labels = sanitizar_datos_para_json([fecha.strftime('%d %b') for fecha in evolucion_df['Date']])
+    chart_evolution_labels = sanitizar_datos_para_json([formatear_fecha_espanol(fecha, formato_corto=True) for fecha in evolucion_df['Date']])
     chart_evolution_accepted = sanitizar_datos_para_json(evolucion_df['Chat Accepted Lines Total'].fillna(0).tolist())
     chart_evolution_suggested = sanitizar_datos_para_json(evolucion_df['Chat Suggested Lines Total'].fillna(0).tolist())
     chart_evolution_users = sanitizar_datos_para_json(evolucion_df['Email'].fillna(0).tolist())
@@ -802,7 +830,7 @@ def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_re
         'PROMEDIO_LINEAS': formato_numero_espanol(metricas['codigo']['promedio_por_usuario']),
         'PETICIONES_TOTALES': formato_numero_espanol(metricas['peticiones']['total']),
         'USUARIOS_INACTIVOS': len(metricas['usuarios']['lista_inactivos']),
-        'FECHA_GENERACION': sanitizar_html(datetime.now().strftime('%d de %B de %Y')),
+        'FECHA_GENERACION': sanitizar_html(f"{datetime.now().day} de {formatear_fecha_espanol(datetime.now()).split()[1]} de {datetime.now().year}"),
         # Métricas comparativas
         'LINEAS_ACEPTADAS_INDICADOR': calcular_indicador_comparativo(
             metricas['metricas_actual']['lineas_aceptadas'], 

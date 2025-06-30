@@ -4,6 +4,44 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.1.2] - 2025-06-30 - Localización Completa al Español
+
+### 🇪🇸 Added - Fechas en Español
+- **Función `formatear_fecha_espanol()`**: Nueva función para formatear fechas en español
+- **Meses traducidos**: Todos los nombres de meses ahora aparecen en español
+- **Formatos múltiples**: Soporte para formato completo (ej: "10 junio 2025") y corto (ej: "10 jun")
+- **Coherencia lingüística**: Eliminación completa de texto en inglés en fechas
+
+### 🔧 Changed - Fechas Actualizadas en Todo el Informe
+- **Cabecera del informe**: Períodos mostrados en español (ej: "10 junio 2025 - 25 junio 2025")
+- **Gráfico de evolución**: Etiquetas de fechas en español (ej: "10 jun", "15 jun")
+- **Fecha de generación**: Footer con fecha completa en español (ej: "30 de junio de 2025")
+- **Logs del sistema**: Salida de consola también en español
+
+### 📊 Improved - Experiencia de Usuario Española
+- **Consistencia lingüística**: 100% del contenido temporal en español
+- **Legibilidad mejorada**: Fechas más naturales para usuarios hispanohablantes
+- **Profesionalismo**: Informe completamente localizado para mercado español
+- **Accesibilidad**: Mayor comprensión para equipos de habla hispana
+
+### 🧪 Testing - Validación de Localización
+```bash
+# Comando ejecutado para validar fechas en español
+python generador_informe_template.py cursor_analytics_1461333_2025-06-28T16_51_01.046Z.csv
+
+# Resultados verificados
+✅ Cabecera: "📅 Período Actual: 10 junio 2025 - 25 junio 2025 vs. 26 mayo 2025 - 09 junio 2025"
+✅ Gráficos: Etiquetas como "10 jun", "15 jun", "20 jun"
+✅ Footer: "30 de junio de 2025"
+✅ Logs: "Período: 10 junio 2025 - 25 junio 2025"
+```
+
+### 🎯 Technical - Implementación
+- **Diccionarios de traducción**: Mapeo completo inglés → español para meses
+- **Formato largo**: January → enero, February → febrero, etc.
+- **Formato corto**: Jan → ene, Feb → feb, etc.
+- **Función reutilizable**: `formatear_fecha_espanol(fecha, formato_corto=False)`
+
 ## [5.1.1] - 2025-06-30 - Corrección Crítica de Coherencia de Métricas
 
 ### 🔧 Fixed - Coherencia Total con Cursor AI
