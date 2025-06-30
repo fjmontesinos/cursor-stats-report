@@ -212,10 +212,10 @@ def calcular_metricas_periodo(df, nombre_periodo=""):
     
     df_activos = df[df['Is Active'] == True]
     
-    # Métricas básicas
+    # Métricas básicas (incluyendo líneas añadidas Y eliminadas)
     usuarios_activos = df_activos['Email'].nunique()
-    lineas_aceptadas = df_activos['Chat Accepted Lines Added'].sum()
-    lineas_sugeridas = df_activos['Chat Suggested Lines Added'].sum()
+    lineas_aceptadas = df_activos['Chat Accepted Lines Added'].sum() + df_activos['Chat Accepted Lines Deleted'].sum()
+    lineas_sugeridas = df_activos['Chat Suggested Lines Added'].sum() + df_activos['Chat Suggested Lines Deleted'].sum()
     tasa_aceptacion = (lineas_aceptadas / lineas_sugeridas * 100) if lineas_sugeridas > 0 else 0
     
     # Métricas de tabs
@@ -401,7 +401,12 @@ def procesar_datos_cursor(archivo_csv):
     # Rankings del período actual
     df_actual_activos = df_actual[df_actual['Is Active'] == True]
     
-    top_productividad = (df_actual_activos.groupby('Email')['Chat Accepted Lines Added']
+    # Top productividad con líneas totales (Added + Deleted)
+    df_actual_activos['Chat Accepted Lines Total'] = (
+        df_actual_activos['Chat Accepted Lines Added'] + 
+        df_actual_activos['Chat Accepted Lines Deleted']
+    )
+    top_productividad = (df_actual_activos.groupby('Email')['Chat Accepted Lines Total']
                         .sum()
                         .sort_values(ascending=False)
                         .head(10))
@@ -422,12 +427,12 @@ def procesar_datos_cursor(archivo_csv):
                      .sort_values(ascending=False)
                      .head(10))
     
-    # Tecnologías más utilizadas (período actual)
-    extensiones_activas = df_actual_activos[df_actual_activos['Chat Accepted Lines Added'] > 0]
+    # Tecnologías más utilizadas (período actual) con líneas totales
+    extensiones_activas = df_actual_activos[df_actual_activos['Chat Accepted Lines Total'] > 0]
     top_extensiones = (extensiones_activas.groupby('Most Used Tab Extension').agg({
-        'Chat Accepted Lines Added': 'sum',
+        'Chat Accepted Lines Total': 'sum',
         'Email': 'nunique'
-    }).sort_values('Chat Accepted Lines Added', ascending=False).head(8))
+    }).sort_values('Chat Accepted Lines Total', ascending=False).head(8))
     
     # Modelos de IA más utilizados (período actual)
     modelos_uso = df_actual_activos['Most Used Model'].value_counts().head(6)
@@ -436,14 +441,21 @@ def procesar_datos_cursor(archivo_csv):
     versiones_cliente = df_actual_activos[df_actual_activos['Client Version'].notna()]
     versiones_uso = versiones_cliente['Client Version'].value_counts().head(8)
     
-    # Evolución temporal por días (período actual)
-    evolucion_diaria = df_actual_activos.groupby('Date').agg({
+    # Evolución temporal por días (TODO EL PERÍODO para contexto completo)
+    df_completo_activos = df[df['Is Active'] == True]
+    evolucion_diaria = df_completo_activos.groupby('Date').agg({
         'Chat Accepted Lines Added': 'sum',
+        'Chat Accepted Lines Deleted': 'sum', 
         'Chat Suggested Lines Added': 'sum',
+        'Chat Suggested Lines Deleted': 'sum',
         'Tabs Accepted': 'sum',
         'Chat Tabs Shown': 'sum',
         'Email': 'nunique'
     }).reset_index()
+    
+    # Calcular totales (Added + Deleted) para el gráfico
+    evolucion_diaria['Chat Accepted Lines Total'] = evolucion_diaria['Chat Accepted Lines Added'] + evolucion_diaria['Chat Accepted Lines Deleted']
+    evolucion_diaria['Chat Suggested Lines Total'] = evolucion_diaria['Chat Suggested Lines Added'] + evolucion_diaria['Chat Suggested Lines Deleted']
     evolucion_diaria = evolucion_diaria.sort_values('Date')
     
     # Fechas formateadas
@@ -665,7 +677,7 @@ def generar_tablas_html(metricas):
     # Tecnologías
     tech_html = ""
     for extension, data in metricas['rankings']['top_extensiones'].iterrows():
-        lineas = int(data['Chat Accepted Lines Added'])
+        lineas = int(data['Chat Accepted Lines Total'])
         usuarios = int(data['Email'])
         extension_sanitizada = sanitizar_html(str(extension))
         badge_class = re.sub(r'[^a-zA-Z0-9_-]', '', str(extension))  # Sanitizar clase CSS
@@ -726,8 +738,8 @@ def generar_tablas_html(metricas):
     # Datos para gráfico de evolución temporal (sanitizados)
     evolucion_df = metricas['evolucion']
     chart_evolution_labels = sanitizar_datos_para_json([fecha.strftime('%d %b') for fecha in evolucion_df['Date']])
-    chart_evolution_accepted = sanitizar_datos_para_json(evolucion_df['Chat Accepted Lines Added'].fillna(0).tolist())
-    chart_evolution_suggested = sanitizar_datos_para_json(evolucion_df['Chat Suggested Lines Added'].fillna(0).tolist())
+    chart_evolution_accepted = sanitizar_datos_para_json(evolucion_df['Chat Accepted Lines Total'].fillna(0).tolist())
+    chart_evolution_suggested = sanitizar_datos_para_json(evolucion_df['Chat Suggested Lines Total'].fillna(0).tolist())
     chart_evolution_users = sanitizar_datos_para_json(evolucion_df['Email'].fillna(0).tolist())
     chart_tabs_accepted = sanitizar_datos_para_json(evolucion_df['Tabs Accepted'].fillna(0).tolist())
     chart_tabs_shown = sanitizar_datos_para_json(evolucion_df['Chat Tabs Shown'].fillna(0).tolist())
