@@ -136,6 +136,14 @@
             padding: 12px 24px;
             border-radius: var(--radius-md);
             font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        .period-comparison-inline {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin-left: 8px;
         }
 
         /* === KPIS === */
@@ -269,25 +277,7 @@
             color: var(--warning);
         }
 
-        /* === HEADER COMPARATIVO === */
-        .period-comparison {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 16px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
 
-        .period-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(27, 54, 93, 0.05);
-            border-radius: 8px;
-        }
 
         /* === SECCIONES === */
         .content-section {
@@ -348,6 +338,27 @@
             background: rgba(27, 54, 93, 0.02);
         }
 
+        /* === ALINEACIÓN DE COLUMNAS === */
+        .data-table th {
+            text-align: left; /* Headers por defecto a la izquierda */
+        }
+
+        .data-table td {
+            text-align: left; /* Datos por defecto a la izquierda */
+        }
+
+        /* Alineación a la derecha para números, porcentajes y fechas */
+        .data-table th.text-right,
+        .data-table td.text-right {
+            text-align: right;
+        }
+
+        /* Alineación centrada si es necesaria */
+        .data-table th.text-center,
+        .data-table td.text-center {
+            text-align: center;
+        }
+
         /* === RESPONSIVE === */
         @media (max-width: 768px) {
             .main-container { padding: 24px; }
@@ -388,14 +399,7 @@
             <p class="header-subtitle">Informe de Productividad y Adopción Comparativo</p>
             <div class="period-badge">
                 📅 Período Actual: {{PERIODO_INICIO}} - {{PERIODO_FIN}}
-            </div>
-            <div class="period-comparison" id="periodComparison">
-                <div class="period-item">
-                    📊 Período Anterior: {{PERIODO_ANTERIOR_INICIO}} - {{PERIODO_ANTERIOR_FIN}} ({{DIAS_ANTERIOR}} días)
-                </div>
-                <div class="period-item">
-                    🎯 Período Actual: {{PERIODO_INICIO}} - {{PERIODO_FIN}} ({{DIAS_ACTUAL}} días)
-                </div>
+                <span class="period-comparison-inline">vs. {{PERIODO_ANTERIOR_INICIO}} - {{PERIODO_ANTERIOR_FIN}}</span>
             </div>
         </header>
 
@@ -518,7 +522,7 @@
                 <h2 class="section-title">🏆 Top Productividad</h2>
                 <table class="data-table">
                     <thead>
-                        <tr><th>Usuario</th><th>Líneas Aceptadas</th></tr>
+                        <tr><th>Usuario</th><th class="text-right">Líneas Aceptadas</th></tr>
                     </thead>
                     <tbody>{{TOP_PRODUCTIVIDAD}}</tbody>
                 </table>
@@ -528,7 +532,7 @@
                 <h2 class="section-title">💪 Power Users</h2>
                 <table class="data-table">
                     <thead>
-                        <tr><th>Usuario</th><th>Peticiones Totales</th></tr>
+                        <tr><th>Usuario</th><th class="text-right">Peticiones Totales</th></tr>
                     </thead>
                     <tbody>{{TOP_PETICIONES}}</tbody>
                 </table>
@@ -540,7 +544,7 @@
                 <h2 class="section-title">💡 Tecnologías</h2>
                 <table class="data-table">
                     <thead>
-                        <tr><th>Tecnología</th><th>Líneas</th><th>Usuarios</th></tr>
+                        <tr><th>Tecnología</th><th class="text-right">Líneas</th><th class="text-right">Usuarios</th></tr>
                     </thead>
                     <tbody>{{TECNOLOGIAS_UTILIZADAS}}</tbody>
                 </table>
@@ -550,7 +554,7 @@
                 <h2 class="section-title">📱 Versiones Cliente</h2>
                 <table class="data-table">
                     <thead>
-                        <tr><th>Versión</th><th>Usuarios</th><th>%</th></tr>
+                        <tr><th>Versión</th><th class="text-right">Usuarios</th><th class="text-right">%</th></tr>
                     </thead>
                     <tbody>{{VERSIONES_CLIENTE}}</tbody>
                 </table>
@@ -668,13 +672,13 @@
             warning: '#F39C12'
         };
 
-        // Gráfico Evolución
+        // Gráfico Evolución con tooltips interactivos
         new Chart(document.getElementById('evolutionChart'), {
             type: 'line',
             data: {
                 labels: {{CHART_EVOLUTION_LABELS}},
                 datasets: [{
-                    label: 'Líneas Aceptadas',
+                    label: 'Total Accepted Lines',
                     data: {{CHART_EVOLUTION_ACCEPTED}},
                     borderColor: colors.primary,
                     backgroundColor: colors.primary + '20',
@@ -682,7 +686,7 @@
                     fill: true,
                     tension: 0.3
                 }, {
-                    label: 'Líneas Sugeridas',
+                    label: 'Total Suggested Lines',
                     data: {{CHART_EVOLUTION_SUGGESTED}},
                     borderColor: colors.accent,
                     borderWidth: 2,
@@ -702,9 +706,69 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1B365D',
+                        bodyColor: '#1B365D',
+                        borderColor: '#1B365D',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const formattedValue = new Intl.NumberFormat('es-ES').format(value);
+                                
+                                if (context.dataset.label === 'Total Accepted Lines') {
+                                    return `📈 Total Accepted Lines: ${formattedValue}`;
+                                } else if (context.dataset.label === 'Total Suggested Lines') {
+                                    return `💡 Total Suggested Lines: ${formattedValue}`;
+                                } else if (context.dataset.label === 'Usuarios Activos') {
+                                    return `👥 Usuarios Activos: ${formattedValue}`;
+                                }
+                                return `${context.dataset.label}: ${formattedValue}`;
+                            },
+                            afterBody: function(context) {
+                                // Calcular tasa de aceptación para este punto
+                                const accepted = context.find(c => c.dataset.label === 'Total Accepted Lines')?.parsed.y || 0;
+                                const suggested = context.find(c => c.dataset.label === 'Total Suggested Lines')?.parsed.y || 0;
+                                const acceptanceRate = suggested > 0 ? ((accepted / suggested) * 100).toFixed(1) : '0.0';
+                                return [``, `✅ Tasa de Aceptación: ${acceptanceRate}%`];
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    y: { beginAtZero: true },
-                    y1: { type: 'linear', position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+                    y: { 
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Líneas de Código'
+                        }
+                    },
+                    y1: { 
+                        type: 'linear', 
+                        position: 'right', 
+                        beginAtZero: true, 
+                        grid: { drawOnChartArea: false },
+                        title: {
+                            display: true,
+                            text: 'Usuarios'
+                        }
+                    }
                 }
             }
         });
@@ -725,7 +789,7 @@
             }
         });
 
-        // Gráfico Tabs
+        // Gráfico Tabs con tooltips interactivos
         new Chart(document.getElementById('tabsChart'), {
             type: 'line',
             data: {
@@ -751,7 +815,58 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1B365D',
+                        bodyColor: '#1B365D',
+                        borderColor: '#1B365D',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        callbacks: {
+                            title: function(context) {
+                                return context[0].label;
+                            },
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const formattedValue = new Intl.NumberFormat('es-ES').format(value);
+                                
+                                if (context.dataset.label === 'Tabs Aceptados') {
+                                    return `⚡ Tabs Aceptados: ${formattedValue}`;
+                                } else if (context.dataset.label === 'Tabs Mostrados') {
+                                    return `💡 Tabs Mostrados: ${formattedValue}`;
+                                }
+                                return `${context.dataset.label}: ${formattedValue}`;
+                            },
+                            afterBody: function(context) {
+                                // Calcular eficiencia de tabs para este punto
+                                const accepted = context.find(c => c.dataset.label === 'Tabs Aceptados')?.parsed.y || 0;
+                                const shown = context.find(c => c.dataset.label === 'Tabs Mostrados')?.parsed.y || 0;
+                                const efficiency = shown > 0 ? ((accepted / shown) * 100).toFixed(1) : '0.0';
+                                return [``, `📊 Eficiencia Tabs: ${efficiency}%`];
+                            }
+                        }
+                    }
+                },
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Número de Tabs'
+                        }
+                    } 
+                }
             }
         });
 

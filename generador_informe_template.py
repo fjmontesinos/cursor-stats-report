@@ -665,14 +665,14 @@ def generar_tablas_html(metricas):
     for email, lineas in metricas['rankings']['top_productividad'].items():
         email_sanitizado = sanitizar_html(str(email))
         lineas_formateadas = formato_numero_espanol(int(lineas))
-        top_prod_html += f"<tr><td>{email_sanitizado}</td><td>{lineas_formateadas}</td></tr>\n                            "
+        top_prod_html += f"<tr><td>{email_sanitizado}</td><td class=\"text-right\">{lineas_formateadas}</td></tr>\n                            "
     
     # Top peticiones
     top_pet_html = ""
     for email, peticiones in metricas['rankings']['top_peticiones'].items():
         email_sanitizado = sanitizar_html(str(email))
         peticiones_formateadas = formato_numero_espanol(int(peticiones))
-        top_pet_html += f"<tr><td>{email_sanitizado}</td><td>{peticiones_formateadas}</td></tr>\n                            "
+        top_pet_html += f"<tr><td>{email_sanitizado}</td><td class=\"text-right\">{peticiones_formateadas}</td></tr>\n                            "
     
     # Tecnologías
     tech_html = ""
@@ -681,7 +681,7 @@ def generar_tablas_html(metricas):
         usuarios = int(data['Email'])
         extension_sanitizada = sanitizar_html(str(extension))
         badge_class = re.sub(r'[^a-zA-Z0-9_-]', '', str(extension))  # Sanitizar clase CSS
-        tech_html += f"<tr><td><span class=\"badge {badge_class}\">{extension_sanitizada}</span></td><td>{formato_numero_espanol(lineas)}</td><td>{usuarios}</td></tr>\n                            "
+        tech_html += f"<tr><td><span class=\"badge {badge_class}\">{extension_sanitizada}</span></td><td class=\"text-right\">{formato_numero_espanol(lineas)}</td><td class=\"text-right\">{usuarios}</td></tr>\n                            "
     
     # Modelos de IA
     models_html = ""
@@ -697,7 +697,7 @@ def generar_tablas_html(metricas):
     for version, uso in metricas['rankings']['versiones_uso'].items():
         version_sanitizada = sanitizar_html(str(version))
         porcentaje = (uso / total_versiones) * 100
-        versions_html += f"<tr><td>{version_sanitizada}</td><td>{uso}</td><td>{formato_numero_espanol(porcentaje)}%</td></tr>\n                            "
+        versions_html += f"<tr><td>{version_sanitizada}</td><td class=\"text-right\">{uso}</td><td class=\"text-right\">{formato_numero_espanol(porcentaje)}%</td></tr>\n                            "
     
     # Lista de usuarios inactivos
     usuarios_inactivos_html = ""

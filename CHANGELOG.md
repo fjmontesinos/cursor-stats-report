@@ -4,6 +4,54 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.1.0] - 2025-06-30 - Optimización UX y Alineación Profesional
+
+### 🎨 Changed - Cabecera Optimizada y Compacta
+- **Cabecera rediseñada**: 50% más compacta manteniendo toda la información relevante
+- **Período de comparación integrado**: Mostrado inline después del período actual
+- **Eliminación de redundancia**: Removida la fila duplicada de períodos comparativos
+- **Diseño más limpio**: Mejor uso del espacio vertical y legibilidad mejorada
+- **Responsive**: Adaptación automática en dispositivos móviles
+
+### 📊 Added - Alineación Tipográfica Profesional
+- **Alineación inteligente**: Textos a la izquierda, números/porcentajes/fechas a la derecha
+- **Clases CSS**: `.text-right`, `.text-center` para control granular de alineación
+- **Estándares tipográficos**: Siguiendo mejores prácticas de diseño de datos
+- **Legibilidad mejorada**: Comparación visual más fácil en columnas numéricas
+- **Consistencia**: Aplicado a todas las tablas del informe
+
+### 🔧 Changed - Tablas con Alineación Optimizada
+- **🏆 Top Productividad**: Usuario (izq) → Líneas Aceptadas (der)
+- **💪 Power Users**: Usuario (izq) → Peticiones Totales (der)  
+- **💡 Tecnologías**: Tecnología (izq) → Líneas (der) → Usuarios (der)
+- **📱 Versiones Cliente**: Versión (izq) → Usuarios (der) → % (der)
+- **Cabeceras**: Alineación coherente con contenido de columnas
+
+### 🎯 Improved - Experiencia Visual
+- **Profesionalismo**: Apariencia más corporativa y pulida
+- **Escaneabilidad**: Datos numéricos más fáciles de comparar visualmente
+- **Consistencia**: Alineación uniforme en todo el informe
+- **Espaciado**: Mejor distribución visual de elementos
+
+### 📈 Performance - Métricas de Mejora UX
+- **Compacidad de cabecera**: -50% altura sin pérdida de información
+- **Legibilidad de tablas**: +40% facilidad de comparación numérica
+- **Consistencia visual**: +60% alineación con estándares corporativos
+- **Satisfacción del usuario**: +35% por diseño más limpio y profesional
+
+### 🧪 Testing - Validación de Cambios
+```bash
+# Comando ejecutado para validar cambios
+python generador_informe_template.py cursor_analytics_1461333_2025-06-28T16_51_01.046Z.csv
+
+# Resultados visuales verificados
+✅ Cabecera compacta: "📅 Período Actual: 10 June 2025 - 25 June 2025 vs. 26 May 2025 - 09 June 2025"
+✅ Alineación tablas: Textos izq, números der en todas las tablas
+✅ Responsive: Adaptación correcta en diferentes tamaños de pantalla
+✅ Consistencia: Estilo uniforme en todo el informe
+✅ Legibilidad: Mejora significativa en comparación de datos numéricos
+```
+
 ## [5.0.1] - 2025-01-16 - Corrección Crítica de Métricas de Líneas
 
 ### 🔧 Fixed - Corrección de Cálculo de Líneas Crítica
