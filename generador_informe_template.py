@@ -386,22 +386,21 @@ def procesar_datos_cursor(archivo_csv):
     # Generar insights comparativos
     insights = generar_insights_comparativos(metricas_actual, metricas_anterior, cohortes, info_division)
     
-    # Métricas globales (todo el período)
-    df_activos_total = df[df['Is Active'] == True]
-    total_usuarios = df['Email'].nunique()
-    usuarios_activos_total = df_activos_total['Email'].nunique()
-    tasa_adopcion_total = round((usuarios_activos_total / total_usuarios) * 100, 1)
+    # Métricas del período actual (NO todo el período)
+    df_actual_activos = df_actual[df_actual['Is Active'] == True]
+    total_usuarios_actual = df_actual['Email'].nunique()
+    usuarios_activos_actual = df_actual_activos['Email'].nunique()
+    tasa_adopcion_actual = round((usuarios_activos_actual / total_usuarios_actual) * 100, 1)
     
-    # Usuarios inactivos globales
-    usuarios_con_actividad = set(df_activos_total['Email'].unique())
-    todos_usuarios = set(df['Email'].unique())
-    usuarios_inactivos = list(todos_usuarios - usuarios_con_actividad)
-    usuarios_inactivos = [email for email in usuarios_inactivos if pd.notna(email) and email.strip()]
+    # Usuarios inactivos del período actual
+    usuarios_con_actividad_actual = set(df_actual_activos['Email'].unique())
+    todos_usuarios_actual = set(df_actual['Email'].unique())
+    usuarios_inactivos_actual = list(todos_usuarios_actual - usuarios_con_actividad_actual)
+    usuarios_inactivos_actual = [email for email in usuarios_inactivos_actual if pd.notna(email) and email.strip()]
     
     # Rankings del período actual
-    df_actual_activos = df_actual[df_actual['Is Active'] == True]
-    
     # Top productividad con líneas totales (Added + Deleted)
+    df_actual_activos = df_actual_activos.copy()  # Evitar SettingWithCopyWarning
     df_actual_activos['Chat Accepted Lines Total'] = (
         df_actual_activos['Chat Accepted Lines Added'] + 
         df_actual_activos['Chat Accepted Lines Deleted']
@@ -475,11 +474,11 @@ def procesar_datos_cursor(archivo_csv):
             'dias_anterior': info_division['dias_anterior']
         },
         'usuarios': {
-            'total': total_usuarios,
-            'activos': usuarios_activos_total,
-            'inactivos': len(usuarios_inactivos),
-            'tasa_adopcion': tasa_adopcion_total,
-            'lista_inactivos': usuarios_inactivos
+            'total': total_usuarios_actual,
+            'activos': usuarios_activos_actual,
+            'inactivos': len(usuarios_inactivos_actual),
+            'tasa_adopcion': tasa_adopcion_actual,
+            'lista_inactivos': usuarios_inactivos_actual
         },
         'codigo': {
             'lineas_aceptadas': metricas_actual['lineas_aceptadas'],
