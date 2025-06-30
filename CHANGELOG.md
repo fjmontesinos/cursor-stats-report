@@ -4,6 +4,55 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.1.4] - 2025-06-30 - Corrección Crítica de Períodos en Gráficos
+
+### 🔧 Fixed - Gráficos Limitados al Período Correcto
+- **Problema crítico**: Los gráficos de evolución mostraban TODO el CSV en lugar del período de análisis
+- **Causa raíz**: `df_completo_activos = df[df['Is Active'] == True]` incluía fechas fuera del rango de análisis
+- **Impacto visual**: Gráficos mostraban datos desde mayo hasta junio completo en lugar del período específico
+- **Solución implementada**: Filtrar datos de gráficos solo al período desde fecha inicio anterior hasta fecha fin actual
+
+### 🎯 Changed - Función de Evolución Temporal Corregida
+- **Antes**: `df_completo_activos = df[df['Is Active'] == True]` (TODO el CSV)
+- **Después**: `df_grafico = df[(df['Date'] >= fecha_inicio_grafico) & (df['Date'] <= fecha_fin_grafico)]`
+- **Período gráficos**: Solo desde inicio anterior hasta fin actual (período completo de análisis)
+- **Coherencia temporal**: Gráficos alineados con KPIs y análisis comparativo
+
+### ✅ Verified - Validación de Períodos Correctos
+```bash
+# Ejemplo con fechas personalizadas
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 \
+  --fecha-fin-actual 2025-06-29 \
+  --fecha-inicio-anterior 2025-06-02 \
+  --fecha-fin-anterior 2025-06-15
+
+# Resultado corregido
+✅ Período anterior: 14 días (02/06 - 15/06)
+✅ Período actual: 14 días (16/06 - 29/06)  
+✅ Gráficos: Solo muestran 02/06 - 29/06 (período completo)
+✅ KPIs: Exclusivamente del período actual (16/06 - 29/06)
+```
+
+### 🔧 Technical - Variables de Filtrado Añadidas
+- **`fecha_inicio_grafico`**: `info_division['periodo_anterior_inicio']`
+- **`fecha_fin_grafico`**: `info_division['periodo_actual_fin']`
+- **`df_grafico`**: DataFrame filtrado solo para el período de análisis
+- **`df_grafico_activos`**: Solo usuarios activos del período de análisis
+
+### 📈 Impact - Coherencia Visual Completa
+- **Gráficos precisos**: Solo muestran el período relevante para el análisis
+- **Eliminación de ruido**: Sin datos irrelevantes de fechas anteriores o posteriores
+- **Consistencia temporal**: Gráficos, KPIs y análisis comparativo perfectamente alineados
+- **Experiencia de usuario**: Visualización clara y enfocada en el período de interés
+
+### 🧪 Testing - Verificación de Todos los Componentes
+- **KPIs principales**: ✅ Usan `df_actual` (período actual)
+- **Análisis comparativo**: ✅ Usa `df_actual` vs `df_anterior`
+- **Rankings**: ✅ Usan `df_actual_activos` (período actual)
+- **Gráficos de evolución**: ✅ Usan `df_grafico_activos` (período completo de análisis)
+- **Cohortes de usuarios**: ✅ Comparan `df_actual` vs `df_anterior`
+
 ## [5.1.3] - 2025-06-30 - Corrección Crítica de Zona Horaria
 
 ### 🔧 Fixed - Compatibilidad de Zona Horaria con Fechas Personalizadas

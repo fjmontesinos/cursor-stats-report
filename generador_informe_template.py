@@ -568,9 +568,15 @@ def procesar_datos_cursor(archivo_csv, fechas_personalizadas=None):
     versiones_cliente = df_actual_activos[df_actual_activos['Client Version'].notna()]
     versiones_uso = versiones_cliente['Client Version'].value_counts().head(8)
     
-    # Evolución temporal por días (TODO EL PERÍODO para contexto completo)
-    df_completo_activos = df[df['Is Active'] == True]
-    evolucion_diaria = df_completo_activos.groupby('Date').agg({
+    # Evolución temporal por días (SOLO período desde inicio anterior hasta fin actual)
+    fecha_inicio_grafico = info_division['periodo_anterior_inicio']
+    fecha_fin_grafico = info_division['periodo_actual_fin']
+    
+    # Filtrar datos solo para el período de los gráficos (anterior + actual)
+    df_grafico = df[(df['Date'] >= fecha_inicio_grafico) & (df['Date'] <= fecha_fin_grafico)]
+    df_grafico_activos = df_grafico[df_grafico['Is Active'] == True]
+    
+    evolucion_diaria = df_grafico_activos.groupby('Date').agg({
         'Chat Accepted Lines Added': 'sum',
         'Chat Accepted Lines Deleted': 'sum', 
         'Chat Suggested Lines Added': 'sum',
