@@ -149,8 +149,195 @@ def formato_numero_espanol(numero):
             return f"{numero:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
     return str(numero)
 
+def dividir_periodos_temporales(df):
+    """Divide el DataFrame en dos períodos: anterior (primera mitad) y actual (segunda mitad)."""
+    # Ordenar por fecha
+    df_ordenado = df.sort_values('Date').copy()
+    
+    # Obtener fechas únicas
+    fechas_unicas = sorted(df_ordenado['Date'].unique())
+    total_dias = len(fechas_unicas)
+    
+    logger.info(f"📅 Total de días únicos en el dataset: {total_dias}")
+    
+    if total_dias < 4:
+        logger.warning("⚠️ Dataset muy pequeño para análisis comparativo")
+        return df_ordenado, pd.DataFrame(), {
+            'total_dias': total_dias,
+            'dias_actual': total_dias,
+            'dias_anterior': 0,
+            'comparativa_valida': False
+        }
+    
+    # Dividir en dos períodos (división entera)
+    punto_corte = total_dias // 2
+    fechas_anteriores = fechas_unicas[:punto_corte]
+    fechas_actuales = fechas_unicas[punto_corte:]
+    
+    # Filtrar DataFrames
+    df_anterior = df_ordenado[df_ordenado['Date'].isin(fechas_anteriores)].copy()
+    df_actual = df_ordenado[df_ordenado['Date'].isin(fechas_actuales)].copy()
+    
+    info_division = {
+        'total_dias': total_dias,
+        'dias_actual': len(fechas_actuales),
+        'dias_anterior': len(fechas_anteriores),
+        'periodo_anterior_inicio': fechas_anteriores[0] if fechas_anteriores else None,
+        'periodo_anterior_fin': fechas_anteriores[-1] if fechas_anteriores else None,
+        'periodo_actual_inicio': fechas_actuales[0] if fechas_actuales else None,
+        'periodo_actual_fin': fechas_actuales[-1] if fechas_actuales else None,
+        'comparativa_valida': len(fechas_anteriores) > 0 and len(fechas_actuales) > 0
+    }
+    
+    logger.info(f"📊 División temporal:")
+    logger.info(f"   • Período anterior: {len(fechas_anteriores)} días ({fechas_anteriores[0].strftime('%d/%m')} - {fechas_anteriores[-1].strftime('%d/%m')})")
+    logger.info(f"   • Período actual: {len(fechas_actuales)} días ({fechas_actuales[0].strftime('%d/%m')} - {fechas_actuales[-1].strftime('%d/%m')})")
+    
+    return df_actual, df_anterior, info_division
+
+def calcular_metricas_periodo(df, nombre_periodo=""):
+    """Calcula métricas para un período específico."""
+    if df.empty:
+        return {
+            'usuarios_activos': 0,
+            'lineas_aceptadas': 0,
+            'lineas_sugeridas': 0,
+            'tasa_aceptacion': 0,
+            'tabs_aceptados': 0,
+            'tabs_mostrados': 0,
+            'tasa_aceptacion_tabs': 0,
+            'peticiones_totales': 0,
+            'promedio_lineas_usuario': 0
+        }
+    
+    df_activos = df[df['Is Active'] == True]
+    
+    # Métricas básicas
+    usuarios_activos = df_activos['Email'].nunique()
+    lineas_aceptadas = df_activos['Chat Accepted Lines Added'].sum()
+    lineas_sugeridas = df_activos['Chat Suggested Lines Added'].sum()
+    tasa_aceptacion = (lineas_aceptadas / lineas_sugeridas * 100) if lineas_sugeridas > 0 else 0
+    
+    # Métricas de tabs
+    tabs_aceptados = df_activos['Tabs Accepted'].sum()
+    tabs_mostrados = df_activos['Chat Tabs Shown'].sum()
+    tasa_aceptacion_tabs = (tabs_aceptados / tabs_mostrados * 100) if tabs_mostrados > 0 else 0
+    
+    # Peticiones totales
+    peticiones_totales = (
+        df_activos['Edit Requests'].sum() + 
+        df_activos['Ask Requests'].sum() + 
+        df_activos['Agent Requests'].sum() + 
+        df_activos['Cmd+K Usages'].sum() + 
+        df_activos['Subscription Included Reqs'].sum() + 
+        df_activos['API Key Reqs'].sum() + 
+        df_activos['Usage Based Reqs'].sum()
+    )
+    
+    # Promedio por usuario
+    promedio_lineas_usuario = (lineas_aceptadas / usuarios_activos) if usuarios_activos > 0 else 0
+    
+    return {
+        'usuarios_activos': usuarios_activos,
+        'lineas_aceptadas': int(lineas_aceptadas),
+        'lineas_sugeridas': int(lineas_sugeridas),
+        'tasa_aceptacion': round(tasa_aceptacion, 1),
+        'tabs_aceptados': int(tabs_aceptados),
+        'tabs_mostrados': int(tabs_mostrados),
+        'tasa_aceptacion_tabs': round(tasa_aceptacion_tabs, 1),
+        'peticiones_totales': int(peticiones_totales),
+        'promedio_lineas_usuario': round(promedio_lineas_usuario, 0)
+    }
+
+def calcular_indicador_comparativo(actual, anterior):
+    """Calcula el indicador visual de comparación entre períodos."""
+    if anterior == 0:
+        if actual > 0:
+            return ' <span class="comparison-indicator positive">🆕 Nuevo</span>'
+        return ' <span class="comparison-indicator neutral">➖ Sin cambios</span>'
+    
+    variacion = ((actual - anterior) / anterior) * 100
+    
+    if variacion > 5:
+        return f' <span class="comparison-indicator positive">📈 +{formato_numero_espanol(variacion)}%</span>'
+    elif variacion < -5:
+        return f' <span class="comparison-indicator negative">📉 {formato_numero_espanol(variacion)}%</span>'
+    else:
+        return f' <span class="comparison-indicator neutral">➖ {formato_numero_espanol(variacion)}%</span>'
+
+def analizar_cohortes_usuarios(df_actual, df_anterior):
+    """Analiza las cohortes de usuarios entre períodos."""
+    usuarios_actuales = set(df_actual[df_actual['Is Active'] == True]['Email'].unique())
+    usuarios_anteriores = set(df_anterior[df_anterior['Is Active'] == True]['Email'].unique()) if not df_anterior.empty else set()
+    
+    # Clasificar usuarios
+    usuarios_consistentes = usuarios_actuales & usuarios_anteriores
+    usuarios_nuevos = usuarios_actuales - usuarios_anteriores
+    usuarios_perdidos = usuarios_anteriores - usuarios_actuales
+    usuarios_reactivados = usuarios_nuevos & set(df_anterior['Email'].unique()) if not df_anterior.empty else set()
+    usuarios_nuevos_reales = usuarios_nuevos - usuarios_reactivados
+    
+    return {
+        'consistentes': list(usuarios_consistentes),
+        'nuevos': list(usuarios_nuevos_reales),
+        'perdidos': list(usuarios_perdidos),
+        'reactivados': list(usuarios_reactivados),
+        'total_actual': len(usuarios_actuales),
+        'total_anterior': len(usuarios_anteriores),
+        'tasa_retencion': (len(usuarios_consistentes) / len(usuarios_anteriores) * 100) if usuarios_anteriores else 0
+    }
+
+def generar_insights_comparativos(metricas_actual, metricas_anterior, cohortes, info_division):
+    """Genera insights estratégicos basados en el análisis comparativo."""
+    insights = []
+    
+    if not info_division['comparativa_valida']:
+        insights.append("📊 <strong>Análisis Base:</strong> Dataset inicial para establecer métricas de referencia.")
+        return insights
+    
+    # Análisis de crecimiento en líneas de código
+    if metricas_anterior['lineas_aceptadas'] > 0:
+        crecimiento_lineas = ((metricas_actual['lineas_aceptadas'] - metricas_anterior['lineas_aceptadas']) / metricas_anterior['lineas_aceptadas']) * 100
+        
+        if crecimiento_lineas > 20:
+            insights.append(f"🚀 <strong>Crecimiento Acelerado:</strong> Productividad aumentó {formato_numero_espanol(crecimiento_lineas)}%. Excelente momento para escalar la adopción.")
+        elif crecimiento_lineas > 5:
+            insights.append(f"📈 <strong>Crecimiento Sostenido:</strong> Mejora del {formato_numero_espanol(crecimiento_lineas)}% indica adopción exitosa.")
+        elif crecimiento_lineas < -10:
+            insights.append(f"⚠️ <strong>Alerta de Descenso:</strong> Caída del {formato_numero_espanol(abs(crecimiento_lineas))}%. Revisar posibles causas.")
+        else:
+            insights.append(f"📊 <strong>Estabilidad:</strong> Variación del {formato_numero_espanol(crecimiento_lineas)}% indica uso consistente.")
+    
+    # Análisis de retención de usuarios
+    if cohortes['tasa_retencion'] > 90:
+        insights.append(f"💎 <strong>Retención Excelente:</strong> {formato_numero_espanol(cohortes['tasa_retencion'])}% de usuarios mantienen actividad.")
+    elif cohortes['tasa_retencion'] < 70:
+        insights.append(f"🔄 <strong>Oportunidad de Retención:</strong> Solo {formato_numero_espanol(cohortes['tasa_retencion'])}% mantienen actividad. Plan de re-engagement necesario.")
+    else:
+        insights.append(f"👥 <strong>Retención Aceptable:</strong> {formato_numero_espanol(cohortes['tasa_retencion'])}% de retención con margen de mejora.")
+    
+    # Usuarios nuevos
+    if len(cohortes['nuevos']) > 0:
+        insights.append(f"🌟 <strong>Expansión Activa:</strong> {len(cohortes['nuevos'])} nuevos usuarios adoptaron la herramienta.")
+    
+    # Usuarios reactivados
+    if len(cohortes['reactivados']) > 0:
+        insights.append(f"🔄 <strong>Reactivación Exitosa:</strong> {len(cohortes['reactivados'])} usuarios volvieron a usar la herramienta.")
+    
+    # Análisis de calidad (tasa de aceptación)
+    if metricas_actual['tasa_aceptacion'] > metricas_anterior['tasa_aceptacion'] + 5:
+        insights.append(f"⚡ <strong>Mejora en Calidad:</strong> Tasa de aceptación subió a {formato_numero_espanol(metricas_actual['tasa_aceptacion'])}%.")
+    elif metricas_actual['tasa_aceptacion'] < metricas_anterior['tasa_aceptacion'] - 5:
+        insights.append(f"🔍 <strong>Revisar Calidad:</strong> Tasa de aceptación bajó a {formato_numero_espanol(metricas_actual['tasa_aceptacion'])}%.")
+    
+    # ROI y productividad
+    if metricas_actual['promedio_lineas_usuario'] > 1000:
+        insights.append(f"💰 <strong>Alto ROI:</strong> Promedio de {formato_numero_espanol(metricas_actual['promedio_lineas_usuario'])} líneas por usuario justifica inversión.")
+    
+    return insights
+
 def procesar_datos_cursor(archivo_csv):
-    """Procesa el archivo CSV y extrae las métricas principales."""
+    """Procesa el archivo CSV con análisis comparativo temporal automático."""
     logger.info(f"📊 Procesando datos de {archivo_csv}...")
     
     try:
@@ -186,79 +373,71 @@ def procesar_datos_cursor(archivo_csv):
         logger.error(f"❌ Error al leer el archivo CSV: {e}")
         return None
     
-    # Filtrar usuarios activos
-    df_activos = df[df['Is Active'] == True]
+    # DIVISIÓN TEMPORAL AUTOMÁTICA
+    df_actual, df_anterior, info_division = dividir_periodos_temporales(df)
     
-    # Métricas básicas
+    # Calcular métricas para ambos períodos
+    metricas_actual = calcular_metricas_periodo(df_actual, "actual")
+    metricas_anterior = calcular_metricas_periodo(df_anterior, "anterior")
+    
+    # Análisis de cohortes
+    cohortes = analizar_cohortes_usuarios(df_actual, df_anterior)
+    
+    # Generar insights comparativos
+    insights = generar_insights_comparativos(metricas_actual, metricas_anterior, cohortes, info_division)
+    
+    # Métricas globales (todo el período)
+    df_activos_total = df[df['Is Active'] == True]
     total_usuarios = df['Email'].nunique()
-    usuarios_activos = df_activos['Email'].nunique()
-    tasa_adopcion = round((usuarios_activos / total_usuarios) * 100, 1)
+    usuarios_activos_total = df_activos_total['Email'].nunique()
+    tasa_adopcion_total = round((usuarios_activos_total / total_usuarios) * 100, 1)
     
-    # Usuarios inactivos
-    usuarios_con_actividad = set(df_activos['Email'].unique())
+    # Usuarios inactivos globales
+    usuarios_con_actividad = set(df_activos_total['Email'].unique())
     todos_usuarios = set(df['Email'].unique())
     usuarios_inactivos = list(todos_usuarios - usuarios_con_actividad)
     usuarios_inactivos = [email for email in usuarios_inactivos if pd.notna(email) and email.strip()]
     
-    # Métricas de código
-    total_lineas_aceptadas = df_activos['Chat Accepted Lines Added'].sum()
-    total_lineas_sugeridas = df_activos['Chat Suggested Lines Added'].sum()
-    tasa_aceptacion = round((total_lineas_aceptadas / total_lineas_sugeridas) * 100, 1) if total_lineas_sugeridas > 0 else 0
-    promedio_lineas_usuario = round(total_lineas_aceptadas / usuarios_activos, 0) if usuarios_activos > 0 else 0
+    # Rankings del período actual
+    df_actual_activos = df_actual[df_actual['Is Active'] == True]
     
-    # Peticiones a IA
-    total_peticiones = (df_activos['Edit Requests'].sum() + 
-                       df_activos['Ask Requests'].sum() + 
-                       df_activos['Agent Requests'].sum() + 
-                       df_activos['Cmd+K Usages'].sum() + 
-                       df_activos['Subscription Included Reqs'].sum() + 
-                       df_activos['API Key Reqs'].sum() + 
-                       df_activos['Usage Based Reqs'].sum())
-    
-    # Rankings
-    top_productividad = (df_activos.groupby('Email')['Chat Accepted Lines Added']
+    top_productividad = (df_actual_activos.groupby('Email')['Chat Accepted Lines Added']
                         .sum()
                         .sort_values(ascending=False)
                         .head(10))
     
-    df_activos['Total_Requests'] = (df_activos['Edit Requests'] + 
-                                   df_activos['Ask Requests'] + 
-                                   df_activos['Agent Requests'] + 
-                                   df_activos['Cmd+K Usages'] + 
-                                   df_activos['Subscription Included Reqs'] + 
-                                   df_activos['API Key Reqs'] + 
-                                   df_activos['Usage Based Reqs'])
+    df_actual_activos = df_actual_activos.copy()
+    df_actual_activos['Total_Requests'] = (
+        df_actual_activos['Edit Requests'] + 
+        df_actual_activos['Ask Requests'] + 
+        df_actual_activos['Agent Requests'] + 
+        df_actual_activos['Cmd+K Usages'] + 
+        df_actual_activos['Subscription Included Reqs'] + 
+        df_actual_activos['API Key Reqs'] + 
+        df_actual_activos['Usage Based Reqs']
+    )
     
-    top_peticiones = (df_activos.groupby('Email')['Total_Requests']
+    top_peticiones = (df_actual_activos.groupby('Email')['Total_Requests']
                      .sum()
                      .sort_values(ascending=False)
                      .head(10))
     
-    # Tecnologías más utilizadas
-    extensiones_activas = df_activos[df_activos['Chat Accepted Lines Added'] > 0]
+    # Tecnologías más utilizadas (período actual)
+    extensiones_activas = df_actual_activos[df_actual_activos['Chat Accepted Lines Added'] > 0]
     top_extensiones = (extensiones_activas.groupby('Most Used Tab Extension').agg({
         'Chat Accepted Lines Added': 'sum',
         'Email': 'nunique'
     }).sort_values('Chat Accepted Lines Added', ascending=False).head(8))
     
-    # Modelos de IA más utilizados
-    modelos_uso = df_activos['Most Used Model'].value_counts().head(6)
+    # Modelos de IA más utilizados (período actual)
+    modelos_uso = df_actual_activos['Most Used Model'].value_counts().head(6)
     
-    # Versiones de cliente
-    versiones_cliente = df_activos[df_activos['Client Version'].notna()]
+    # Versiones de cliente (período actual)
+    versiones_cliente = df_actual_activos[df_actual_activos['Client Version'].notna()]
     versiones_uso = versiones_cliente['Client Version'].value_counts().head(8)
     
-    # Fechas del período
-    fecha_inicio = df['Date'].min().strftime('%d %B %Y')
-    fecha_fin = df['Date'].max().strftime('%d %B %Y')
-    
-    # Métricas de tabs
-    total_tabs_aceptados = df_activos['Tabs Accepted'].sum()
-    total_tabs_mostrados = df_activos['Chat Tabs Shown'].sum()
-    tasa_aceptacion_tabs = (total_tabs_aceptados / total_tabs_mostrados) * 100 if total_tabs_mostrados > 0 else 0
-    
-    # Evolución temporal por días
-    evolucion_diaria = df_activos.groupby('Date').agg({
+    # Evolución temporal por días (período actual)
+    evolucion_diaria = df_actual_activos.groupby('Date').agg({
         'Chat Accepted Lines Added': 'sum',
         'Chat Suggested Lines Added': 'sum',
         'Tabs Accepted': 'sum',
@@ -267,30 +446,45 @@ def procesar_datos_cursor(archivo_csv):
     }).reset_index()
     evolucion_diaria = evolucion_diaria.sort_values('Date')
     
+    # Fechas formateadas
+    fecha_inicio_actual = info_division['periodo_actual_inicio'].strftime('%d %B %Y') if info_division['periodo_actual_inicio'] else "N/A"
+    fecha_fin_actual = info_division['periodo_actual_fin'].strftime('%d %B %Y') if info_division['periodo_actual_fin'] else "N/A"
+    fecha_inicio_anterior = info_division['periodo_anterior_inicio'].strftime('%d %B %Y') if info_division['periodo_anterior_inicio'] else "N/A"
+    fecha_fin_anterior = info_division['periodo_anterior_fin'].strftime('%d %B %Y') if info_division['periodo_anterior_fin'] else "N/A"
+    
     return {
         'periodo': {
-            'inicio': fecha_inicio,
-            'fin': fecha_fin
+            'inicio': fecha_inicio_actual,
+            'fin': fecha_fin_actual,
+            'anterior_inicio': fecha_inicio_anterior,
+            'anterior_fin': fecha_fin_anterior,
+            'comparativa_valida': info_division['comparativa_valida'],
+            'dias_actual': info_division['dias_actual'],
+            'dias_anterior': info_division['dias_anterior']
         },
         'usuarios': {
             'total': total_usuarios,
-            'activos': usuarios_activos,
+            'activos': usuarios_activos_total,
             'inactivos': len(usuarios_inactivos),
-            'tasa_adopcion': tasa_adopcion,
+            'tasa_adopcion': tasa_adopcion_total,
             'lista_inactivos': usuarios_inactivos
         },
         'codigo': {
-            'lineas_aceptadas': int(total_lineas_aceptadas),
-            'tasa_aceptacion': tasa_aceptacion,
-            'promedio_por_usuario': int(promedio_lineas_usuario)
+            'lineas_aceptadas': metricas_actual['lineas_aceptadas'],
+            'tasa_aceptacion': metricas_actual['tasa_aceptacion'],
+            'promedio_por_usuario': metricas_actual['promedio_lineas_usuario']
         },
         'tabs': {
-            'tabs_aceptados': int(total_tabs_aceptados),
-            'tasa_aceptacion_tabs': tasa_aceptacion_tabs
+            'tabs_aceptados': metricas_actual['tabs_aceptados'],
+            'tasa_aceptacion_tabs': metricas_actual['tasa_aceptacion_tabs']
         },
         'peticiones': {
-            'total': int(total_peticiones)
+            'total': metricas_actual['peticiones_totales']
         },
+        'metricas_actual': metricas_actual,
+        'metricas_anterior': metricas_anterior,
+        'cohortes': cohortes,
+        'insights': insights,
         'rankings': {
             'top_productividad': top_productividad,
             'top_peticiones': top_peticiones,
@@ -298,8 +492,158 @@ def procesar_datos_cursor(archivo_csv):
             'modelos_uso': modelos_uso,
             'versiones_uso': versiones_uso
         },
-        'evolucion': evolucion_diaria
+        'evolucion': evolucion_diaria,
+        'info_division': info_division
     }
+
+def generar_textos_alternativos_kpis(metricas):
+    """Genera textos alternativos dinámicos para cada KPI basado en los datos."""
+    textos = {}
+    
+    # KPI Líneas de Código IA
+    lineas = metricas['codigo']['lineas_aceptadas']
+    if lineas > 100000:
+        textos['LINEAS_TEXTO'] = "Productividad excepcional - superando las 100K líneas"
+    elif lineas > 50000:
+        textos['LINEAS_TEXTO'] = "Alta productividad - más de 50K líneas generadas"
+    elif lineas > 10000:
+        textos['LINEAS_TEXTO'] = "Productividad sólida - más de 10K líneas"
+    else:
+        textos['LINEAS_TEXTO'] = "Fase inicial de adopción"
+    
+    # KPI Tasa de Aceptación
+    tasa = metricas['codigo']['tasa_aceptacion']
+    if tasa > 70:
+        textos['TASA_TEXTO'] = "Excelente calidad - alta precisión de sugerencias"
+    elif tasa > 50:
+        textos['TASA_TEXTO'] = "Buena calidad - sugerencias relevantes"
+    elif tasa > 30:
+        textos['TASA_TEXTO'] = "Calidad aceptable - margen de mejora"
+    else:
+        textos['TASA_TEXTO'] = "Requiere optimización de prompts y configuración"
+    
+    # KPI Tabs Aceptados
+    tabs = metricas['tabs']['tabs_aceptados']
+    if tabs > 5000:
+        textos['TABS_TEXTO'] = "Uso intensivo del autocompletado inteligente"
+    elif tabs > 1000:
+        textos['TABS_TEXTO'] = "Buen aprovechamiento del autocompletado"
+    elif tabs > 100:
+        textos['TABS_TEXTO'] = "Uso moderado del autocompletado"
+    else:
+        textos['TABS_TEXTO'] = "Oportunidad de aumentar uso de autocompletado"
+    
+    # KPI Eficiencia Tabs
+    eficiencia = metricas['tabs']['tasa_aceptacion_tabs']
+    if eficiencia > 30:
+        textos['EFICIENCIA_TEXTO'] = "Autocompletado muy efectivo"
+    elif eficiencia > 20:
+        textos['EFICIENCIA_TEXTO'] = "Autocompletado efectivo"
+    elif eficiencia > 10:
+        textos['EFICIENCIA_TEXTO'] = "Autocompletado moderadamente efectivo"
+    else:
+        textos['EFICIENCIA_TEXTO'] = "Autocompletado requiere ajustes"
+    
+    # KPI Peticiones Totales
+    peticiones = metricas['peticiones']['total']
+    if peticiones > 20000:
+        textos['PETICIONES_TEXTO'] = "Interacción muy activa con IA"
+    elif peticiones > 10000:
+        textos['PETICIONES_TEXTO'] = "Interacción activa con modelos de IA"
+    elif peticiones > 5000:
+        textos['PETICIONES_TEXTO'] = "Interacción moderada con IA"
+    else:
+        textos['PETICIONES_TEXTO'] = "Potencial para mayor interacción"
+    
+    # KPI Promedio por Usuario
+    promedio = metricas['codigo']['promedio_por_usuario']
+    if promedio > 2000:
+        textos['PROMEDIO_TEXTO'] = "Productividad individual excepcional"
+    elif promedio > 1000:
+        textos['PROMEDIO_TEXTO'] = "Buena productividad individual"
+    elif promedio > 500:
+        textos['PROMEDIO_TEXTO'] = "Productividad individual moderada"
+    else:
+        textos['PROMEDIO_TEXTO'] = "Oportunidad de mejora individual"
+    
+    # KPI Usuarios Activos
+    adopcion = metricas['usuarios']['tasa_adopcion']
+    if adopcion > 90:
+        textos['USUARIOS_TEXTO'] = "Adopción casi universal - excelente"
+    elif adopcion > 80:
+        textos['USUARIOS_TEXTO'] = "Alta adopción - muy buena cobertura"
+    elif adopcion > 60:
+        textos['USUARIOS_TEXTO'] = "Adopción aceptable - margen de crecimiento"
+    else:
+        textos['USUARIOS_TEXTO'] = "Adopción inicial - gran potencial"
+    
+    # KPI Usuarios Inactivos
+    inactivos = len(metricas['usuarios']['lista_inactivos'])
+    if inactivos == 0:
+        textos['INACTIVOS_TEXTO'] = "¡Adopción completa! Todos los usuarios activos"
+    elif inactivos <= 5:
+        textos['INACTIVOS_TEXTO'] = "Muy pocos usuarios sin actividad"
+    elif inactivos <= 15:
+        textos['INACTIVOS_TEXTO'] = "Grupo pequeño requiere atención"
+    else:
+        textos['INACTIVOS_TEXTO'] = "Oportunidad significativa de activación"
+    
+    # KPIs de Cohortes
+    consistentes = len(metricas['cohortes']['consistentes'])
+    nuevos = len(metricas['cohortes']['nuevos'])
+    reactivados = len(metricas['cohortes']['reactivados'])
+    perdidos = len(metricas['cohortes']['perdidos'])
+    retencion = metricas['cohortes']['tasa_retencion']
+    
+    # Texto para Usuarios Consistentes
+    if retencion > 90:
+        textos['CONSISTENTES_TEXTO'] = "Base sólida de usuarios fieles"
+    elif retencion > 75:
+        textos['CONSISTENTES_TEXTO'] = "Buena base de usuarios regulares"
+    else:
+        textos['CONSISTENTES_TEXTO'] = "Oportunidad de fidelización"
+    
+    # Texto para Usuarios Nuevos
+    if nuevos > 10:
+        textos['NUEVOS_TEXTO'] = "Excelente crecimiento orgánico"
+    elif nuevos > 5:
+        textos['NUEVOS_TEXTO'] = "Buen crecimiento de usuarios"
+    elif nuevos > 0:
+        textos['NUEVOS_TEXTO'] = "Crecimiento moderado pero positivo"
+    else:
+        textos['NUEVOS_TEXTO'] = "Sin nuevos usuarios en este período"
+    
+    # Texto para Usuarios Reactivados
+    if reactivados > 10:
+        textos['REACTIVADOS_TEXTO'] = "Excelente recuperación de usuarios"
+    elif reactivados > 5:
+        textos['REACTIVADOS_TEXTO'] = "Buena reactivación de usuarios"
+    elif reactivados > 0:
+        textos['REACTIVADOS_TEXTO'] = "Algunos usuarios han vuelto"
+    else:
+        textos['REACTIVADOS_TEXTO'] = "Sin reactivaciones en este período"
+    
+    # Texto para Usuarios Perdidos
+    if perdidos == 0:
+        textos['PERDIDOS_TEXTO'] = "¡Retención perfecta! Sin pérdidas"
+    elif perdidos <= 3:
+        textos['PERDIDOS_TEXTO'] = "Pérdida mínima de usuarios"
+    elif perdidos <= 10:
+        textos['PERDIDOS_TEXTO'] = "Pérdida controlada de usuarios"
+    else:
+        textos['PERDIDOS_TEXTO'] = "Atención: pérdida significativa"
+    
+    # Texto para Tasa de Retención
+    if retencion > 95:
+        textos['RETENCION_TEXTO'] = "Retención excepcional"
+    elif retencion > 85:
+        textos['RETENCION_TEXTO'] = "Muy buena retención"
+    elif retencion > 70:
+        textos['RETENCION_TEXTO'] = "Retención aceptable"
+    else:
+        textos['RETENCION_TEXTO'] = "Requiere plan de retención"
+    
+    return textos
 
 def generar_tablas_html(metricas):
     """Genera las tablas HTML para insertar en la plantilla."""
@@ -370,6 +714,11 @@ def generar_tablas_html(metricas):
     
     recomendaciones_html = "\n                ".join(recomendaciones)
     
+    # Insights estratégicos
+    insights_html = ""
+    for insight in metricas['insights']:
+        insights_html += f"<li>{insight}</li>\n                "
+    
     # Datos para gráficos (sanitizados)
     chart_models_labels = sanitizar_datos_para_json(list(metricas['rankings']['modelos_uso'].index))
     chart_models_data = sanitizar_datos_para_json([round((uso / total_modelos) * 100, 1) for uso in metricas['rankings']['modelos_uso'].values])
@@ -387,9 +736,11 @@ def generar_tablas_html(metricas):
         'TOP_PRODUCTIVIDAD': top_prod_html,
         'TOP_PETICIONES': top_pet_html,
         'TECNOLOGIAS_UTILIZADAS': tech_html,
+        'MODELOS_IA': models_html,
         'VERSIONES_CLIENTE': versions_html,
         'USUARIOS_INACTIVOS_LISTA': usuarios_inactivos_html,
         'RECOMENDACIONES_ESTRATEGICAS': recomendaciones_html,
+        'INSIGHTS_ESTRATEGICOS': insights_html,
         'CHART_MODELS_LABELS': json.dumps(chart_models_labels, ensure_ascii=False),
         'CHART_MODELS_DATA': json.dumps(chart_models_data, ensure_ascii=False),
         'CHART_EVOLUTION_LABELS': json.dumps(chart_evolution_labels, ensure_ascii=False),
@@ -418,10 +769,18 @@ def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_re
     # Generar tablas HTML
     tablas = generar_tablas_html(metricas)
     
+    # Generar textos alternativos dinámicos
+    textos_alternativos = generar_textos_alternativos_kpis(metricas)
+    
     # Crear diccionario de reemplazos (sanitizados)
     placeholders = {
         'PERIODO_INICIO': sanitizar_html(metricas['periodo']['inicio']),
         'PERIODO_FIN': sanitizar_html(metricas['periodo']['fin']),
+        'PERIODO_ANTERIOR_INICIO': sanitizar_html(metricas['periodo']['anterior_inicio']),
+        'PERIODO_ANTERIOR_FIN': sanitizar_html(metricas['periodo']['anterior_fin']),
+        'COMPARATIVA_VALIDA': 'true' if metricas['periodo']['comparativa_valida'] else 'false',
+        'DIAS_ACTUAL': metricas['periodo']['dias_actual'],
+        'DIAS_ANTERIOR': metricas['periodo']['dias_anterior'],
         'TASA_ADOPCION': formato_numero_espanol(metricas['usuarios']['tasa_adopcion']),
         'USUARIOS_ACTIVOS': metricas['usuarios']['activos'],
         'TOTAL_USUARIOS': metricas['usuarios']['total'],
@@ -433,7 +792,43 @@ def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_re
         'PETICIONES_TOTALES': formato_numero_espanol(metricas['peticiones']['total']),
         'USUARIOS_INACTIVOS': len(metricas['usuarios']['lista_inactivos']),
         'FECHA_GENERACION': sanitizar_html(datetime.now().strftime('%d de %B de %Y')),
-        **tablas
+        # Métricas comparativas
+        'LINEAS_ACEPTADAS_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['lineas_aceptadas'], 
+            metricas['metricas_anterior']['lineas_aceptadas']
+        ),
+        'USUARIOS_ACTIVOS_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['usuarios_activos'], 
+            metricas['metricas_anterior']['usuarios_activos']
+        ),
+        'TASA_ACEPTACION_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['tasa_aceptacion'], 
+            metricas['metricas_anterior']['tasa_aceptacion']
+        ),
+        'PETICIONES_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['peticiones_totales'], 
+            metricas['metricas_anterior']['peticiones_totales']
+        ),
+        'TABS_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['tabs_aceptados'], 
+            metricas['metricas_anterior']['tabs_aceptados']
+        ),
+        'TASA_ACEPTACION_TABS_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['tasa_aceptacion_tabs'], 
+            metricas['metricas_anterior']['tasa_aceptacion_tabs']
+        ),
+        'PROMEDIO_LINEAS_INDICADOR': calcular_indicador_comparativo(
+            metricas['metricas_actual']['promedio_lineas_usuario'], 
+            metricas['metricas_anterior']['promedio_lineas_usuario']
+        ),
+        # Cohortes de usuarios
+        'USUARIOS_CONSISTENTES': len(metricas['cohortes']['consistentes']),
+        'USUARIOS_NUEVOS': len(metricas['cohortes']['nuevos']),
+        'USUARIOS_PERDIDOS': len(metricas['cohortes']['perdidos']),
+        'USUARIOS_REACTIVADOS': len(metricas['cohortes']['reactivados']),
+        'TASA_RETENCION': formato_numero_espanol(metricas['cohortes']['tasa_retencion']),
+        **tablas,
+        **textos_alternativos
     }
     
     # Reemplazar placeholders

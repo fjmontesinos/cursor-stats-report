@@ -47,6 +47,63 @@
             padding: 32px;
         }
 
+        /* === NAVEGACIÓN === */
+        .nav-menu {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            z-index: 1000;
+        }
+
+        .nav-toggle {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+
+        .nav-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-dropdown a {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .nav-dropdown a:hover {
+            background: var(--background-gray);
+        }
+
         /* === HEADER === */
         .header {
             background: var(--white);
@@ -158,6 +215,80 @@
             line-height: 1.4;
         }
 
+        /* === INDICADORES COMPARATIVOS === */
+        .comparison-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .comparison-indicator.positive {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .comparison-indicator.negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .comparison-indicator.neutral {
+            background: rgba(108, 117, 125, 0.1);
+            color: var(--text-secondary);
+        }
+
+        /* === BADGES DE COHORTES === */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .badge-new {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--info);
+        }
+
+        .badge-consistent {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .badge-reactivated {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        /* === HEADER COMPARATIVO === */
+        .period-comparison {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .period-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(27, 54, 93, 0.05);
+            border-radius: 8px;
+        }
+
         /* === SECCIONES === */
         .content-section {
             background: var(--white);
@@ -217,69 +348,19 @@
             background: rgba(27, 54, 93, 0.02);
         }
 
-        /* === NAVEGACIÓN === */
-        .nav-menu {
-            position: fixed;
-            top: 32px;
-            right: 32px;
-            z-index: 1000;
-        }
-
-        .nav-toggle {
-            background: var(--primary-blue);
-            color: var(--white);
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.125rem;
-        }
-
-        .nav-dropdown {
-            position: absolute;
-            top: 60px;
-            right: 0;
-            background: var(--white);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-light);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-
-        .nav-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .nav-dropdown a {
-            display: block;
-            padding: 12px 24px;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .nav-dropdown a:hover {
-            background: var(--background-gray);
-        }
-
         /* === RESPONSIVE === */
         @media (max-width: 768px) {
             .main-container { padding: 24px; }
             .kpis-grid { grid-template-columns: 1fr; }
             .content-grid { grid-template-columns: 1fr; }
             .header-title { font-size: 2rem; }
+            /* Cohortes en móvil: 2 filas */
+            #cohorts .kpis-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        @media (max-width: 1200px) and (min-width: 769px) {
+            /* Cohortes en tablet: 3 columnas */
+            #cohorts .kpis-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
     </style>
 </head>
@@ -295,6 +376,8 @@
                 <a href="#teams">👥 Análisis Equipos</a>
                 <a href="#technologies">💡 Tecnologías</a>
                 <a href="#models">🧠 Modelos IA</a>
+                <a href="#cohorts">👥 Cohortes de Usuarios</a>
+                <a href="#insights">🔍 Insights Estratégicos</a>
                 <a href="#summary">🎯 Resumen Ejecutivo</a>
             </div>
         </nav>
@@ -302,9 +385,17 @@
         <!-- Header -->
         <header class="header">
             <h1 class="header-title">🤖 Cursor AI Analytics</h1>
-            <p class="header-subtitle">Informe de Productividad y Adopción</p>
+            <p class="header-subtitle">Informe de Productividad y Adopción Comparativo</p>
             <div class="period-badge">
-                📅 Período: {{PERIODO_INICIO}} - {{PERIODO_FIN}}
+                📅 Período Actual: {{PERIODO_INICIO}} - {{PERIODO_FIN}}
+            </div>
+            <div class="period-comparison" id="periodComparison">
+                <div class="period-item">
+                    📊 Período Anterior: {{PERIODO_ANTERIOR_INICIO}} - {{PERIODO_ANTERIOR_FIN}} ({{DIAS_ANTERIOR}} días)
+                </div>
+                <div class="period-item">
+                    🎯 Período Actual: {{PERIODO_INICIO}} - {{PERIODO_FIN}} ({{DIAS_ACTUAL}} días)
+                </div>
             </div>
         </header>
 
@@ -318,8 +409,8 @@
                         <div class="kpi-icon success">💻</div>
                         <div class="kpi-label">Líneas de Código IA</div>
                     </div>
-                    <div class="kpi-value">{{LINEAS_ACEPTADAS}}</div>
-                    <div class="kpi-description">Total de líneas generadas y aceptadas</div>
+                    <div class="kpi-value">{{LINEAS_ACEPTADAS}}{{LINEAS_ACEPTADAS_INDICADOR}}</div>
+                    <div class="kpi-description">{{LINEAS_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -327,8 +418,8 @@
                         <div class="kpi-icon info">✅</div>
                         <div class="kpi-label">Tasa de Aceptación</div>
                     </div>
-                    <div class="kpi-value">{{TASA_ACEPTACION}}%</div>
-                    <div class="kpi-description">Calidad y relevancia de sugerencias</div>
+                    <div class="kpi-value">{{TASA_ACEPTACION}}%{{TASA_ACEPTACION_INDICADOR}}</div>
+                    <div class="kpi-description">{{TASA_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -336,8 +427,8 @@
                         <div class="kpi-icon warning">⚡</div>
                         <div class="kpi-label">Tabs Aceptados</div>
                     </div>
-                    <div class="kpi-value">{{TABS_ACEPTADOS}}</div>
-                    <div class="kpi-description">Autocompletado inteligente utilizado</div>
+                    <div class="kpi-value">{{TABS_ACEPTADOS}}{{TABS_INDICADOR}}</div>
+                    <div class="kpi-description">{{TABS_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -345,8 +436,8 @@
                         <div class="kpi-icon info">📊</div>
                         <div class="kpi-label">Eficiencia Tabs</div>
                     </div>
-                    <div class="kpi-value">{{TASA_ACEPTACION_TABS}}%</div>
-                    <div class="kpi-description">Efectividad del autocompletado</div>
+                    <div class="kpi-value">{{TASA_ACEPTACION_TABS}}%{{TASA_ACEPTACION_TABS_INDICADOR}}</div>
+                    <div class="kpi-description">{{EFICIENCIA_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -354,8 +445,8 @@
                         <div class="kpi-icon success">🚀</div>
                         <div class="kpi-label">Peticiones Totales</div>
                     </div>
-                    <div class="kpi-value">{{PETICIONES_TOTALES}}</div>
-                    <div class="kpi-description">Interacciones con modelos de IA</div>
+                    <div class="kpi-value">{{PETICIONES_TOTALES}}{{PETICIONES_INDICADOR}}</div>
+                    <div class="kpi-description">{{PETICIONES_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
@@ -363,17 +454,17 @@
                         <div class="kpi-icon info">👤</div>
                         <div class="kpi-label">Promedio/Usuario</div>
                     </div>
-                    <div class="kpi-value">{{PROMEDIO_LINEAS}}</div>
-                    <div class="kpi-description">Líneas promedio por desarrollador</div>
+                    <div class="kpi-value">{{PROMEDIO_LINEAS}}{{PROMEDIO_LINEAS_INDICADOR}}</div>
+                    <div class="kpi-description">{{PROMEDIO_TEXTO}}</div>
                 </div>
 
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <div class="kpi-icon success">📈</div>
-                        <div class="kpi-label">Tasa de Adopción</div>
+                        <div class="kpi-label">Usuarios Activos</div>
                     </div>
-                    <div class="kpi-value">{{TASA_ADOPCION}}%</div>
-                    <div class="kpi-description">{{USUARIOS_ACTIVOS}} de {{TOTAL_USUARIOS}} usuarios activos</div>
+                    <div class="kpi-value">{{USUARIOS_ACTIVOS}}{{USUARIOS_ACTIVOS_INDICADOR}}</div>
+                    <div class="kpi-description">{{USUARIOS_TEXTO}} ({{USUARIOS_ACTIVOS}}/{{TOTAL_USUARIOS}} - {{TASA_ADOPCION}}%)</div>
                 </div>
 
                 <div class="kpi-card">
@@ -382,7 +473,7 @@
                         <div class="kpi-label">Usuarios Inactivos</div>
                     </div>
                     <div class="kpi-value">{{USUARIOS_INACTIVOS}}</div>
-                    <div class="kpi-description">Requieren atención y formación</div>
+                    <div class="kpi-description">{{INACTIVOS_TEXTO}}</div>
                 </div>
             </div>
         </section>
@@ -466,6 +557,65 @@
             </section>
         </div>
 
+        <!-- Análisis de Cohortes -->
+        <section class="content-section" id="cohorts">
+            <h2 class="section-title">👥 Análisis de Cohortes de Usuarios</h2>
+            <div class="kpis-grid" style="grid-template-columns: repeat(5, 1fr); gap: 16px;">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon success">💎</div>
+                        <div class="kpi-label">Usuarios Consistentes</div>
+                    </div>
+                    <div class="kpi-value">{{USUARIOS_CONSISTENTES}}</div>
+                    <div class="kpi-description">{{CONSISTENTES_TEXTO}}</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon info">🌟</div>
+                        <div class="kpi-label">Usuarios Nuevos</div>
+                    </div>
+                    <div class="kpi-value">{{USUARIOS_NUEVOS}}</div>
+                    <div class="kpi-description">{{NUEVOS_TEXTO}}</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon warning">🔄</div>
+                        <div class="kpi-label">Usuarios Reactivados</div>
+                    </div>
+                    <div class="kpi-value">{{USUARIOS_REACTIVADOS}}</div>
+                    <div class="kpi-description">{{REACTIVADOS_TEXTO}}</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon danger">⚠️</div>
+                        <div class="kpi-label">Usuarios Perdidos</div>
+                    </div>
+                    <div class="kpi-value">{{USUARIOS_PERDIDOS}}</div>
+                    <div class="kpi-description">{{PERDIDOS_TEXTO}}</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div class="kpi-icon success">📊</div>
+                        <div class="kpi-label">Tasa de Retención</div>
+                    </div>
+                    <div class="kpi-value">{{TASA_RETENCION}}%</div>
+                    <div class="kpi-description">{{RETENCION_TEXTO}}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Insights Estratégicos -->
+        <section class="content-section" id="insights">
+            <h2 class="section-title">🔍 Insights Estratégicos</h2>
+            <ul style="list-style: none; padding: 0;">
+                {{INSIGHTS_ESTRATEGICOS}}
+            </ul>
+        </section>
+
         <!-- Resumen -->
         <section class="content-section" id="summary">
             <h2 class="section-title">🎯 Resumen Ejecutivo</h2>
@@ -498,6 +648,11 @@
                 {{USUARIOS_INACTIVOS_LISTA}}
             </ul>
         </section>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 32px; color: var(--text-secondary); font-size: 0.875rem;">
+            📊 Informe generado el {{FECHA_GENERACION}} • Cursor AI Analytics v1.0
+        </footer>
     </div>
 
     <script>
@@ -611,6 +766,16 @@
         document.addEventListener('click', (e) => {
             if (!navToggle.contains(e.target) && !navDropdown.contains(e.target)) {
                 navDropdown.classList.remove('active');
+            }
+        });
+
+        // Control de visibilidad de comparación de períodos
+        document.addEventListener('DOMContentLoaded', () => {
+            const comparativaValida = '{{COMPARATIVA_VALIDA}}' === 'true';
+            const periodComparison = document.getElementById('periodComparison');
+            
+            if (periodComparison) {
+                periodComparison.style.display = comparativaValida ? 'flex' : 'none';
             }
         });
     </script>
