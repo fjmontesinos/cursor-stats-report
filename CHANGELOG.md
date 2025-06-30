@@ -4,6 +4,57 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.1.3] - 2025-06-30 - Corrección Crítica de Zona Horaria
+
+### 🔧 Fixed - Compatibilidad de Zona Horaria con Fechas Personalizadas
+- **Problema crítico**: Error `TypeError: Invalid comparison between dtype=datetime64[ns, UTC] and Timestamp` al usar fechas personalizadas
+- **Causa raíz**: CSV con fechas en UTC comparándose con timestamps sin zona horaria
+- **Error específico**: `Cannot compare tz-naive and tz-aware datetime-like objects`
+- **Solución implementada**: Detección automática de zona horaria del DataFrame y aplicación a timestamps de comparación
+
+### 🎯 Changed - Función `dividir_periodos_personalizados()` Mejorada
+- **Detección automática**: `tz = df['Date'].dt.tz` para obtener zona horaria del CSV
+- **Timestamps compatibles**: `pd.Timestamp(fecha, tz=tz)` para todas las fechas de comparación
+- **Robustez**: Manejo de CSVs con y sin zona horaria automáticamente
+- **Compatibilidad**: Funciona con cualquier formato de fecha del CSV
+
+### ✅ Verified - Validación Exitosa con Fechas Personalizadas
+```bash
+# Comando que ahora funciona correctamente
+python generador_informe_template.py cursor_analytics.csv \
+  --fecha-inicio-actual 2025-06-16 \
+  --fecha-fin-actual 2025-06-29 \
+  --fecha-inicio-anterior 2025-06-02 \
+  --fecha-fin-anterior 2025-06-15 \
+  --salida informe_segunda_quincena_junio.html \
+  --verbose
+
+# Resultado exitoso
+✅ Período anterior: 14 días (02/06 - 15/06)
+✅ Período actual: 14 días (16/06 - 29/06)
+✅ Usuarios activos: 54/71 (76.1%)
+✅ Líneas de código IA: 125,838
+✅ Tasa de aceptación: 57.2%
+```
+
+### 🔧 Technical - Implementación de la Solución
+- **Detección de zona horaria**: Verificación automática de `df['Date'].dt.tz`
+- **Aplicación condicional**: Solo aplica zona horaria si existe en el DataFrame
+- **Compatibilidad hacia atrás**: Funciona tanto con CSVs con zona horaria como sin ella
+- **Código robusto**: Manejo de casos edge con `hasattr()` y verificaciones de `None`
+
+### 📈 Impact - Funcionalidad Restaurada
+- **Fechas personalizadas**: 100% funcionales con cualquier formato de CSV
+- **Flexibilidad**: Análisis de períodos específicos sin limitaciones
+- **Robustez**: Manejo automático de diferentes formatos de fecha
+- **Experiencia de usuario**: Comando funcionando sin errores técnicos
+
+### 🧪 Testing - Casos Validados
+- **CSV con UTC**: `datetime64[ns, UTC]` ✅ Funciona
+- **CSV sin zona horaria**: `datetime64[ns]` ✅ Funciona  
+- **Fechas personalizadas**: Rangos específicos ✅ Funciona
+- **División automática**: Comportamiento original ✅ Intacto
+
 ## [5.1.2] - 2025-06-30 - Localización Completa al Español
 
 ### 🇪🇸 Added - Fechas en Español

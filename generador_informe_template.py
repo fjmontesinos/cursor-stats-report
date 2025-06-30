@@ -177,6 +177,100 @@ def formatear_fecha_espanol(fecha, formato_corto=False):
     
     return fecha_str
 
+def validar_y_parsear_fechas(fecha_inicio_actual, fecha_fin_actual, fecha_inicio_anterior, fecha_fin_anterior, df):
+    """Valida y parsea las fechas personalizadas proporcionadas por el usuario."""
+    fechas_personalizadas = {}
+    errores = []
+    
+    # Lista de fechas disponibles en el dataset
+    fechas_disponibles = set(df['Date'].dt.date)
+    fecha_min = min(fechas_disponibles)
+    fecha_max = max(fechas_disponibles)
+    
+    def parsear_fecha(fecha_str, nombre_campo):
+        if not fecha_str:
+            return None
+        
+        try:
+            fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+            
+            # Verificar que la fecha esté en el dataset
+            if fecha_obj not in fechas_disponibles:
+                errores.append(f"❌ {nombre_campo}: {fecha_str} no existe en el dataset. Rango disponible: {fecha_min} - {fecha_max}")
+                return None
+                
+            return fecha_obj
+        except ValueError:
+            errores.append(f"❌ {nombre_campo}: Formato inválido '{fecha_str}'. Use YYYY-MM-DD")
+            return None
+    
+    # Parsear todas las fechas
+    fechas_personalizadas['inicio_actual'] = parsear_fecha(fecha_inicio_actual, "Fecha inicio actual")
+    fechas_personalizadas['fin_actual'] = parsear_fecha(fecha_fin_actual, "Fecha fin actual")
+    fechas_personalizadas['inicio_anterior'] = parsear_fecha(fecha_inicio_anterior, "Fecha inicio anterior")
+    fechas_personalizadas['fin_anterior'] = parsear_fecha(fecha_fin_anterior, "Fecha fin anterior")
+    
+    # Verificar que todas las fechas estén presentes si se usa modo manual
+    fechas_proporcionadas = [f for f in fechas_personalizadas.values() if f is not None]
+    
+    if len(fechas_proporcionadas) > 0 and len(fechas_proporcionadas) < 4:
+        errores.append("❌ Si especifica fechas personalizadas, debe proporcionar las 4 fechas: --fecha-inicio-actual, --fecha-fin-actual, --fecha-inicio-anterior, --fecha-fin-anterior")
+    
+    # Validaciones lógicas si todas las fechas están presentes
+    if len(fechas_proporcionadas) == 4:
+        inicio_actual = fechas_personalizadas['inicio_actual']
+        fin_actual = fechas_personalizadas['fin_actual']
+        inicio_anterior = fechas_personalizadas['inicio_anterior']
+        fin_anterior = fechas_personalizadas['fin_anterior']
+        
+        if inicio_actual >= fin_actual:
+            errores.append("❌ Fecha inicio actual debe ser anterior a fecha fin actual")
+        
+        if inicio_anterior >= fin_anterior:
+            errores.append("❌ Fecha inicio anterior debe ser anterior a fecha fin anterior")
+        
+        # Verificar solapamiento de períodos
+        if not (fin_anterior < inicio_actual or fin_actual < inicio_anterior):
+            logger.warning("⚠️ Los períodos se solapan. Esto puede afectar el análisis de cohortes")
+    
+    return fechas_personalizadas, errores
+
+def dividir_periodos_personalizados(df, fechas_personalizadas):
+    """Divide el DataFrame usando fechas personalizadas especificadas por el usuario."""
+    # Crear timestamps con la misma zona horaria que el DataFrame
+    tz = df['Date'].dt.tz if hasattr(df['Date'].dt, 'tz') and df['Date'].dt.tz is not None else None
+    
+    inicio_actual = pd.Timestamp(fechas_personalizadas['inicio_actual'], tz=tz)
+    fin_actual = pd.Timestamp(fechas_personalizadas['fin_actual'], tz=tz)
+    inicio_anterior = pd.Timestamp(fechas_personalizadas['inicio_anterior'], tz=tz)
+    fin_anterior = pd.Timestamp(fechas_personalizadas['fin_anterior'], tz=tz)
+    
+    # Filtrar DataFrames por rangos de fechas
+    df_actual = df[(df['Date'] >= inicio_actual) & (df['Date'] <= fin_actual)].copy()
+    df_anterior = df[(df['Date'] >= inicio_anterior) & (df['Date'] <= fin_anterior)].copy()
+    
+    # Calcular días únicos en cada período
+    dias_actual = df_actual['Date'].nunique()
+    dias_anterior = df_anterior['Date'].nunique()
+    
+    info_division = {
+        'total_dias': dias_actual + dias_anterior,
+        'dias_actual': dias_actual,
+        'dias_anterior': dias_anterior,
+        'periodo_anterior_inicio': inicio_anterior,
+        'periodo_anterior_fin': fin_anterior,
+        'periodo_actual_inicio': inicio_actual,
+        'periodo_actual_fin': fin_actual,
+        'comparativa_valida': dias_anterior > 0 and dias_actual > 0,
+        'modo_personalizado': True
+    }
+    
+    logger.info(f"📊 División temporal personalizada:")
+    logger.info(f"   • Período anterior: {dias_anterior} días ({inicio_anterior.strftime('%d/%m')} - {fin_anterior.strftime('%d/%m')})")
+    logger.info(f"   • Período actual: {dias_actual} días ({inicio_actual.strftime('%d/%m')} - {fin_actual.strftime('%d/%m')})")
+    
+    return df_actual, df_anterior, info_division
+
 def dividir_periodos_temporales(df):
     """Divide el DataFrame en dos períodos: anterior (primera mitad) y actual (segunda mitad)."""
     # Ordenar por fecha
@@ -214,7 +308,8 @@ def dividir_periodos_temporales(df):
         'periodo_anterior_fin': fechas_anteriores[-1] if fechas_anteriores else None,
         'periodo_actual_inicio': fechas_actuales[0] if fechas_actuales else None,
         'periodo_actual_fin': fechas_actuales[-1] if fechas_actuales else None,
-        'comparativa_valida': len(fechas_anteriores) > 0 and len(fechas_actuales) > 0
+        'comparativa_valida': len(fechas_anteriores) > 0 and len(fechas_actuales) > 0,
+        'modo_personalizado': False
     }
     
     logger.info(f"📊 División temporal:")
@@ -364,8 +459,8 @@ def generar_insights_comparativos(metricas_actual, metricas_anterior, cohortes, 
     
     return insights
 
-def procesar_datos_cursor(archivo_csv):
-    """Procesa el archivo CSV con análisis comparativo temporal automático."""
+def procesar_datos_cursor(archivo_csv, fechas_personalizadas=None):
+    """Procesa el archivo CSV con análisis comparativo temporal automático o personalizado."""
     logger.info(f"📊 Procesando datos de {archivo_csv}...")
     
     try:
@@ -401,8 +496,13 @@ def procesar_datos_cursor(archivo_csv):
         logger.error(f"❌ Error al leer el archivo CSV: {e}")
         return None
     
-    # DIVISIÓN TEMPORAL AUTOMÁTICA
-    df_actual, df_anterior, info_division = dividir_periodos_temporales(df)
+    # DIVISIÓN TEMPORAL: PERSONALIZADA O AUTOMÁTICA
+    if fechas_personalizadas and all(fechas_personalizadas.values()):
+        logger.info("🎯 Usando fechas personalizadas especificadas por el usuario")
+        df_actual, df_anterior, info_division = dividir_periodos_personalizados(df, fechas_personalizadas)
+    else:
+        logger.info("🔄 Usando división temporal automática")
+        df_actual, df_anterior, info_division = dividir_periodos_temporales(df)
     
     # Calcular métricas para ambos períodos
     metricas_actual = calcular_metricas_periodo(df_actual, "actual")
@@ -905,6 +1005,16 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Activar logging detallado')
     
+    # Parámetros para fechas personalizadas
+    parser.add_argument('--fecha-inicio-actual', type=str,
+                       help='Fecha inicio período actual (YYYY-MM-DD). Si no se especifica, usa división automática')
+    parser.add_argument('--fecha-fin-actual', type=str,
+                       help='Fecha fin período actual (YYYY-MM-DD). Si no se especifica, usa división automática')
+    parser.add_argument('--fecha-inicio-anterior', type=str,
+                       help='Fecha inicio período anterior (YYYY-MM-DD). Si no se especifica, usa división automática')
+    parser.add_argument('--fecha-fin-anterior', type=str,
+                       help='Fecha fin período anterior (YYYY-MM-DD). Si no se especifica, usa división automática')
+    
     args = parser.parse_args()
     
     # Configurar nivel de logging
@@ -914,8 +1024,34 @@ def main():
     logger.info("🚀 Iniciando generación de informe de Cursor AI Analytics")
     logger.info("=" * 60)
     
+    # Validar fechas personalizadas si se proporcionan
+    fechas_personalizadas = None
+    if any([args.fecha_inicio_actual, args.fecha_fin_actual, args.fecha_inicio_anterior, args.fecha_fin_anterior]):
+        # Cargar CSV temporalmente para validar fechas
+        try:
+            df_temp = pd.read_csv(args.archivo_csv)
+            df_temp['Date'] = pd.to_datetime(df_temp['Date'], errors='coerce')
+            df_temp = df_temp.dropna(subset=['Date'])
+            
+            fechas_personalizadas, errores = validar_y_parsear_fechas(
+                args.fecha_inicio_actual, args.fecha_fin_actual,
+                args.fecha_inicio_anterior, args.fecha_fin_anterior, df_temp
+            )
+            
+            if errores:
+                logger.error("❌ Errores en fechas personalizadas:")
+                for error in errores:
+                    logger.error(f"  • {error}")
+                sys.exit(1)
+                
+            logger.info("✅ Fechas personalizadas validadas correctamente")
+            
+        except Exception as e:
+            logger.error(f"❌ Error al validar fechas personalizadas: {e}")
+            sys.exit(1)
+    
     # Procesar datos
-    metricas = procesar_datos_cursor(args.archivo_csv)
+    metricas = procesar_datos_cursor(args.archivo_csv, fechas_personalizadas)
     
     if metricas is None:
         logger.error("❌ Error al procesar los datos. Abortando.")
