@@ -4,6 +4,74 @@ Todos los cambios importantes del proyecto se documentan en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
+## [5.2.0] - 2025-06-30 - Sistema de Ayuda Interactivo Completo
+
+### 🆕 Added - Iconos de Ayuda para Todas las Secciones
+- **Sistema de ayuda universal**: Iconos "?" añadidos a todas las tablas, gráficos y KPIs
+- **Modal apaisado mejorado**: Diseño de dos columnas para mejor aprovechamiento del espacio
+- **Contenido educativo**: Explicaciones detalladas para cada métrica y análisis
+- **Navegación intuitiva**: Cierre con clic fuera, botón X o tecla Escape
+
+### 📊 Enhanced - Modales de Ayuda Implementados
+- **📊 KPIs**: Explicación de métricas principales, indicadores comparativos y objetivos recomendados
+- **📈 Evolución Temporal**: Descripción de líneas del gráfico, tooltips interactivos y patrones a buscar
+- **🔄 Evolución de Tabs**: Métricas de autocompletado, cálculo de eficiencia y análisis estratégico
+- **🧠 Modelos de IA**: Descripción de modelos disponibles, análisis de costes y recomendaciones
+- **🏆 Top Productividad**: Criterios de ranking, métricas incluidas e identificación de power users
+- **💪 Power Users**: Criterios de selección, valor estratégico y programa de reconocimiento
+- **💡 Tecnologías**: Análisis del stack tecnológico, identificación de especialistas y insights
+- **👥 Análisis de Cohortes**: Definición de cohortes, estrategias por grupo y objetivos
+
+### 🎨 Improved - Diseño y UX
+- **Modal responsive**: Diseño de dos columnas en desktop, una en móvil
+- **Contenido estructurado**: Ejemplos prácticos, recomendaciones estratégicas destacadas
+- **Accesibilidad mejorada**: Navegación por teclado y indicadores visuales claros
+- **Consistencia visual**: Iconos uniformes y tooltips informativos
+
+### 🎯 Strategic - Valor Educativo
+- **Onboarding mejorado**: Nuevos usuarios pueden entender cada métrica
+- **Formación interna**: Equipos pueden interpretar correctamente los datos
+- **Toma de decisiones**: Contexto estratégico para cada análisis
+- **Adopción de IA**: Guías para optimizar el uso de Cursor AI
+
+### 📈 Impact - Experiencia de Usuario
+- **Autonomía**: Usuarios pueden entender el informe sin documentación externa
+- **Eficiencia**: Acceso rápido a información contextual
+- **Profesionalismo**: Informe auto-explicativo de nivel enterprise
+- **Escalabilidad**: Sistema extensible para futuras métricas
+
+## [5.1.6] - 2025-06-30 - Corrección de Gráfico de Modelos
+
+### 🔧 Fixed - Restauración de Datos para Gráfico de Donut
+- **Problema**: Al eliminar placeholders de `MODELOS_IA`, se eliminaron también los datos del gráfico de donut de modelos
+- **Causa**: Confusión entre tabla HTML (no utilizada) y datos de gráfico (sí utilizados)
+- **Solución**: Restaurar solo `CHART_MODELS_LABELS` y `CHART_MODELS_DATA` para el gráfico
+- **Resultado**: Gráfico de donut de modelos funcionando correctamente ✅
+
+### 🎯 Changed - Separación de Responsabilidades
+- **Tabla HTML**: Comentada (placeholder `MODELOS_IA` no utilizado en plantilla)
+- **Datos de gráfico**: Restaurados (necesarios para gráfico de donut)
+- **Placeholders**: 56/56 reemplazados correctamente, sin warnings
+
+## [5.1.5] - 2025-06-30 - Limpieza de Placeholders No Utilizados
+
+### 🔧 Fixed - Eliminación Completa de Warnings de Placeholders
+- **Problema menor**: Warnings sobre placeholders no encontrados en plantilla (`DIAS_ACTUAL`, `DIAS_ANTERIOR`, `MODELOS_IA`)
+- **Causa**: Placeholders generados en código pero no utilizados en la plantilla HTML actual
+- **Solución**: Eliminación y comentado completo de placeholders no utilizados
+- **Impacto**: Reducción de warnings de 3 a 0, logs 100% limpios ✅
+
+### 🎯 Changed - Optimización de Placeholders
+- **Eliminados**: `DIAS_ACTUAL`, `DIAS_ANTERIOR`, `MODELOS_IA` (no utilizados en plantilla)
+- **Comentados**: Código relacionado con modelos de IA para futura implementación
+- **Resultado**: Logs 100% limpios, sin warnings durante la ejecución
+
+### ✅ Verified - Funcionalidad Completa Mantenida
+- **Gráficos**: Correctamente limitados al período de análisis
+- **KPIs**: Usando períodos correctos
+- **Fechas personalizadas**: Funcionando perfectamente
+- **Zona horaria**: Compatible con diferentes formatos de CSV
+
 ## [5.1.4] - 2025-06-30 - Corrección Crítica de Períodos en Gráficos
 
 ### 🔧 Fixed - Gráficos Limitados al Período Correcto

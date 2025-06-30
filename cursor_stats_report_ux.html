@@ -156,6 +156,150 @@
             font-weight: 600;
             color: var(--primary-blue);
             margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* === ICONOS DE AYUDA === */
+        .help-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--info);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .help-icon:hover {
+            background: var(--primary-blue);
+            transform: scale(1.1);
+        }
+
+        /* === MODAL DE AYUDA === */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .help-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-modal-content {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 800px;
+            width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .help-modal.active .help-modal-content {
+            transform: scale(1);
+        }
+
+        .help-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .help-modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .help-modal-close:hover {
+            background: var(--background-gray);
+            color: var(--text-primary);
+        }
+
+        .help-modal-body {
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .help-modal-body h4 {
+            color: var(--primary-blue);
+            margin: 16px 0 8px 0;
+            font-weight: 600;
+        }
+
+        .help-modal-body ul {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .help-modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .help-example {
+            background: var(--background-gray);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin: 16px 0;
+            border-left: 4px solid var(--info);
+        }
+
+        .help-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .help-content-column {
+            min-width: 0; /* Permite que el contenido se ajuste */
+        }
+
+        @media (max-width: 768px) {
+            .help-content-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
         }
 
         .kpis-grid {
@@ -405,7 +549,10 @@
 
         <!-- KPIs Principales -->
         <section class="kpis-section" id="kpis">
-            <h2 class="section-title">📊 Indicadores Clave de Rendimiento</h2>
+            <h2 class="section-title">
+                📊 Indicadores Clave de Rendimiento
+                <span class="help-icon" onclick="openHelpModal('kpis-help')" title="Información sobre los KPIs">?</span>
+            </h2>
             
             <div class="kpis-grid">
                 <div class="kpi-card">
@@ -483,8 +630,11 @@
         </section>
 
         <!-- Evolución Temporal - Ancho completo -->
-        <section class="content-section" id="evolution">
-            <h2 class="section-title">📈 Evolución Temporal</h2>
+                    <section class="content-section" id="evolution">
+                <h2 class="section-title">
+                    📈 Evolución Temporal
+                    <span class="help-icon" onclick="openHelpModal('evolution-help')" title="Información sobre la evolución temporal">?</span>
+                </h2>
             <div class="chart-container">
                 <canvas id="evolutionChart"></canvas>
             </div>
@@ -496,7 +646,10 @@
         <!-- Gráficos Inferiores -->
         <div class="content-grid">
             <section class="content-section" id="tabs">
-                <h2 class="section-title">🔄 Evolución de Tabs</h2>
+                <h2 class="section-title">
+                    🔄 Evolución de Tabs
+                    <span class="help-icon" onclick="openHelpModal('tabs-help')" title="Información sobre la evolución de tabs">?</span>
+                </h2>
                 <div class="chart-container">
                     <canvas id="tabsChart"></canvas>
                 </div>
@@ -506,7 +659,10 @@
             </section>
 
             <section class="content-section" id="models">
-                <h2 class="section-title">🧠 Modelos de IA</h2>
+                <h2 class="section-title">
+                    🧠 Modelos de IA
+                    <span class="help-icon" onclick="openHelpModal('models-help')" title="Información sobre los modelos de IA">?</span>
+                </h2>
                 <div class="chart-container">
                     <canvas id="modelsChart"></canvas>
                 </div>
@@ -519,7 +675,10 @@
         <!-- Rankings -->
         <div class="content-grid">
             <section class="content-section" id="teams">
-                <h2 class="section-title">🏆 Top Productividad</h2>
+                <h2 class="section-title">
+                    🏆 Top Productividad
+                    <span class="help-icon" onclick="openHelpModal('productivity-help')" title="Información sobre el ranking de productividad">?</span>
+                </h2>
                 <table class="data-table">
                     <thead>
                         <tr><th>Usuario</th><th class="text-right">Líneas Aceptadas</th></tr>
@@ -529,7 +688,10 @@
             </section>
 
             <section class="content-section">
-                <h2 class="section-title">💪 Power Users</h2>
+                <h2 class="section-title">
+                    💪 Power Users
+                    <span class="help-icon" onclick="openHelpModal('power-users-help')" title="Información sobre los power users">?</span>
+                </h2>
                 <table class="data-table">
                     <thead>
                         <tr><th>Usuario</th><th class="text-right">Peticiones Totales</th></tr>
@@ -541,7 +703,10 @@
 
         <div class="content-grid">
             <section class="content-section" id="technologies">
-                <h2 class="section-title">💡 Tecnologías</h2>
+                <h2 class="section-title">
+                    💡 Tecnologías
+                    <span class="help-icon" onclick="openHelpModal('technologies-help')" title="Información sobre las tecnologías utilizadas">?</span>
+                </h2>
                 <table class="data-table">
                     <thead>
                         <tr><th>Tecnología</th><th class="text-right">Líneas</th><th class="text-right">Usuarios</th></tr>
@@ -551,7 +716,10 @@
             </section>
 
             <section class="content-section">
-                <h2 class="section-title">📱 Versiones Cliente</h2>
+                <h2 class="section-title">
+                    📱 Versiones Cliente
+                    <span class="help-icon" onclick="openHelpModal('versions-help')" title="Información sobre esta métrica">?</span>
+                </h2>
                 <table class="data-table">
                     <thead>
                         <tr><th>Versión</th><th class="text-right">Usuarios</th><th class="text-right">%</th></tr>
@@ -563,7 +731,10 @@
 
         <!-- Análisis de Cohortes -->
         <section class="content-section" id="cohorts">
-            <h2 class="section-title">👥 Análisis de Cohortes de Usuarios</h2>
+            <h2 class="section-title">
+                👥 Análisis de Cohortes de Usuarios
+                <span class="help-icon" onclick="openHelpModal('cohorts-help')" title="Información sobre el análisis de cohortes">?</span>
+            </h2>
             <div class="kpis-grid" style="grid-template-columns: repeat(5, 1fr); gap: 16px;">
                 <div class="kpi-card">
                     <div class="kpi-header">
@@ -657,6 +828,423 @@
         <footer style="text-align: center; padding: 32px; color: var(--text-secondary); font-size: 0.875rem;">
             📊 Informe generado el {{FECHA_GENERACION}} • Cursor AI Analytics v1.0
         </footer>
+    </div>
+
+    <!-- Modal de Ayuda - Versiones Cliente -->
+    <div id="versions-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">📱 Versiones Cliente - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('versions-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Esta tabla muestra la distribución de versiones del cliente Cursor AI utilizadas por los usuarios durante el período analizado.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>📊 Cómo se calculan los datos:</h4>
+                        <ul>
+                            <li><strong>Usuarios:</strong> Número total de registros de actividad por versión (usuario × días)</li>
+                            <li><strong>Porcentaje:</strong> Proporción de uso de cada versión respecto al total</li>
+                            <li><strong>Identificación:</strong> Por combinación de Email + Versión del cliente</li>
+                        </ul>
+
+                        <div class="help-example">
+                            <h4>💡 Ejemplo práctico:</h4>
+                            <p>Si <code>usuario@empresa.com</code> usa la versión <code>1.0.0</code> durante 10 días y luego cambia a <code>1.1.3</code> durante 5 días:</p>
+                            <ul>
+                                <li>Versión 1.0.0: +10 registros</li>
+                                <li>Versión 1.1.3: +5 registros</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🎯 Utilidad estratégica:</h4>
+                        <ul>
+                            <li><strong>Fragmentación:</strong> Identificar si hay demasiadas versiones en uso</li>
+                            <li><strong>Adopción:</strong> Ver qué tan rápido se adoptan las nuevas versiones</li>
+                            <li><strong>Soporte:</strong> Priorizar soporte técnico en versiones más utilizadas</li>
+                            <li><strong>Actualizaciones:</strong> Planificar estrategias de migración</li>
+                        </ul>
+
+                        <div style="background: rgba(244, 185, 66, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--accent-orange);">
+                            <h4 style="color: var(--accent-orange); margin-top: 0;">💡 Recomendación clave:</h4>
+                            <p style="margin-bottom: 0;"><em>Una organización saludable debería tener >50% de usuarios en la versión principal para minimizar fragmentación y costes de soporte.</em></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - KPIs -->
+    <div id="kpis-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">📊 Indicadores Clave de Rendimiento - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('kpis-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Los KPIs muestran las métricas más importantes del período actual comparadas con el período anterior.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>📈 Métricas principales:</h4>
+                        <ul>
+                            <li><strong>Líneas de Código IA:</strong> Total de líneas aceptadas (Added + Deleted)</li>
+                            <li><strong>Tasa de Aceptación:</strong> % de líneas sugeridas que se aceptaron</li>
+                            <li><strong>Usuarios Activos:</strong> Usuarios que utilizaron IA en el período</li>
+                            <li><strong>Peticiones Totales:</strong> Suma de todas las interacciones con IA</li>
+                        </ul>
+
+                        <h4>🎯 Indicadores comparativos:</h4>
+                        <ul>
+                            <li><span style="color: var(--success);">📈 +X%</span> Mejora respecto al período anterior</li>
+                            <li><span style="color: var(--danger);">📉 -X%</span> Disminución respecto al período anterior</li>
+                            <li><span style="color: var(--text-secondary);">➖ X%</span> Sin cambios significativos</li>
+                            <li><span style="color: var(--info);">🆕</span> Nuevo (sin período anterior)</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🔍 Cómo interpretar:</h4>
+                        <ul>
+                            <li><strong>Eficiencia Tabs:</strong> Ratio de tabs aceptados vs mostrados</li>
+                            <li><strong>Promedio/Usuario:</strong> Líneas de código IA por usuario activo</li>
+                            <li><strong>Tasa Adopción:</strong> % de usuarios totales que usan IA</li>
+                        </ul>
+
+                        <div style="background: rgba(39, 174, 96, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--success);">
+                            <h4 style="color: var(--success); margin-top: 0;">✅ Objetivos recomendados:</h4>
+                            <ul style="margin-bottom: 0;">
+                                <li>Tasa de aceptación >45%</li>
+                                <li>Adopción >70%</li>
+                                <li>Eficiencia tabs >15%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Evolución Temporal -->
+    <div id="evolution-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">📈 Evolución Temporal - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('evolution-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Este gráfico muestra la evolución diaria de las métricas principales durante el período de análisis completo.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>📊 Líneas del gráfico:</h4>
+                        <ul>
+                            <li><strong style="color: var(--primary-blue);">Líneas Aceptadas:</strong> Código IA incorporado cada día</li>
+                            <li><strong style="color: var(--accent-orange);">Líneas Sugeridas:</strong> Total de código propuesto por IA</li>
+                            <li><strong style="color: var(--success);">Usuarios Activos:</strong> Número de usuarios que usaron IA</li>
+                        </ul>
+
+                        <h4>🎯 Tooltips interactivos:</h4>
+                        <p>Haz hover sobre cualquier punto para ver:</p>
+                        <ul>
+                            <li>Valores exactos del día</li>
+                            <li>Tasa de aceptación calculada</li>
+                            <li>Métricas formateadas en español</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🔍 Qué buscar:</h4>
+                        <ul>
+                            <li><strong>Tendencias:</strong> ¿Aumenta el uso de IA?</li>
+                            <li><strong>Patrones:</strong> ¿Hay días más productivos?</li>
+                            <li><strong>Correlaciones:</strong> ¿Más usuarios = más líneas?</li>
+                            <li><strong>Anomalías:</strong> Picos o caídas inusuales</li>
+                        </ul>
+
+                        <div class="help-example">
+                            <h4>💡 Interpretación:</h4>
+                            <p>Una tendencia ascendente en líneas aceptadas con usuarios estables indica mejora en la calidad de las sugerencias de IA.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Evolución de Tabs -->
+    <div id="tabs-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">🔄 Evolución de Tabs - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('tabs-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Este gráfico muestra la evolución de las sugerencias de autocompletado (tabs) de Cursor AI.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>📊 Métricas de tabs:</h4>
+                        <ul>
+                            <li><strong style="color: var(--info);">Tabs Aceptados:</strong> Autocompletados utilizados por los desarrolladores</li>
+                            <li><strong style="color: var(--warning);">Tabs Mostrados:</strong> Total de sugerencias de autocompletado presentadas</li>
+                        </ul>
+
+                        <h4>🎯 Eficiencia de tabs:</h4>
+                        <p>Se calcula como: <code>(Tabs Aceptados / Tabs Mostrados) × 100</code></p>
+                        <ul>
+                            <li><strong>>20%:</strong> Excelente eficiencia</li>
+                            <li><strong>15-20%:</strong> Buena eficiencia</li>
+                            <li><strong><15%:</strong> Necesita mejora</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🔍 Análisis estratégico:</h4>
+                        <ul>
+                            <li><strong>Adopción:</strong> ¿Los desarrolladores usan autocompletado?</li>
+                            <li><strong>Precisión:</strong> ¿Las sugerencias son relevantes?</li>
+                            <li><strong>Productividad:</strong> ¿Acelera el desarrollo?</li>
+                        </ul>
+
+                        <div style="background: rgba(52, 152, 219, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--info);">
+                            <h4 style="color: var(--info); margin-top: 0;">💡 Optimización:</h4>
+                            <p style="margin-bottom: 0;">Una alta ratio de tabs mostrados con baja aceptación puede indicar sugerencias poco relevantes o necesidad de entrenamiento del equipo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Modelos de IA -->
+    <div id="models-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">🧠 Modelos de IA - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('models-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Este gráfico de donut muestra la distribución de uso de los diferentes modelos de IA disponibles en Cursor.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>🤖 Modelos disponibles:</h4>
+                        <ul>
+                            <li><strong>GPT-4:</strong> Modelo premium para tareas complejas</li>
+                            <li><strong>Claude:</strong> Excelente para análisis y razonamiento</li>
+                            <li><strong>GPT-3.5:</strong> Rápido y eficiente para tareas básicas</li>
+                            <li><strong>Otros:</strong> Modelos especializados</li>
+                        </ul>
+
+                        <h4>📊 Cálculo del uso:</h4>
+                        <p>Basado en la columna "Most Used Model" del CSV, que registra el modelo más utilizado por cada usuario en cada día.</p>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🎯 Análisis estratégico:</h4>
+                        <ul>
+                            <li><strong>Costes:</strong> Modelos premium vs básicos</li>
+                            <li><strong>Preferencias:</strong> ¿Qué modelos prefiere el equipo?</li>
+                            <li><strong>Casos de uso:</strong> ¿Se usan los modelos apropiados?</li>
+                            <li><strong>Optimización:</strong> Balance coste-beneficio</li>
+                        </ul>
+
+                        <div style="background: rgba(243, 156, 18, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--warning);">
+                            <h4 style="color: var(--warning); margin-top: 0;">⚡ Recomendación:</h4>
+                            <p style="margin-bottom: 0;">Monitorear el uso de modelos premium para optimizar costes sin comprometer la productividad del equipo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Top Productividad -->
+    <div id="productivity-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">🏆 Top Productividad - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('productivity-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Esta tabla muestra el ranking de usuarios por productividad con IA durante el período analizado.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>📊 Métricas incluidas:</h4>
+                        <ul>
+                            <li><strong>Total Accepted Lines:</strong> Líneas de código IA aceptadas</li>
+                            <li><strong>Total Suggested Lines:</strong> Líneas totales sugeridas por IA</li>
+                            <li><strong>Total Requests:</strong> Número de peticiones a la IA</li>
+                            <li><strong>Acceptance Rate:</strong> % de líneas sugeridas que se aceptaron</li>
+                        </ul>
+
+                        <h4>🎯 Ordenación:</h4>
+                        <p>Los usuarios están ordenados por <strong>Total Accepted Lines</strong> (líneas aceptadas) de mayor a menor.</p>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🔍 Análisis estratégico:</h4>
+                        <ul>
+                            <li><strong>Power Users:</strong> Identificar usuarios más productivos</li>
+                            <li><strong>Adopción:</strong> Ver quién aprovecha mejor la IA</li>
+                            <li><strong>Eficiencia:</strong> Comparar tasas de aceptación</li>
+                            <li><strong>Formación:</strong> Detectar necesidades de training</li>
+                        </ul>
+
+                        <div style="background: rgba(39, 174, 96, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--success);">
+                            <h4 style="color: var(--success); margin-top: 0;">💡 Insight clave:</h4>
+                            <p style="margin-bottom: 0;">Los usuarios con alta tasa de aceptación (>50%) son candidatos ideales para ser mentores internos de IA.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Power Users -->
+    <div id="power-users-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">💪 Power Users - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('power-users-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Esta tabla identifica a los usuarios más avanzados en el uso de IA, con métricas de alto rendimiento.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>🏅 Criterios Power User:</h4>
+                        <ul>
+                            <li><strong>Líneas Aceptadas:</strong> >1000 líneas en el período</li>
+                            <li><strong>Tasa Aceptación:</strong> >40% de eficiencia</li>
+                            <li><strong>Uso Consistente:</strong> Actividad regular</li>
+                            <li><strong>Diversidad:</strong> Uso de múltiples funciones</li>
+                        </ul>
+
+                        <h4>📈 Métricas mostradas:</h4>
+                        <ul>
+                            <li>Total de líneas aceptadas</li>
+                            <li>Tasa de aceptación</li>
+                            <li>Días activos en el período</li>
+                            <li>Promedio líneas/día</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🎯 Valor estratégico:</h4>
+                        <ul>
+                            <li><strong>Mentores:</strong> Pueden formar a otros desarrolladores</li>
+                            <li><strong>Beta Testers:</strong> Ideales para nuevas funciones</li>
+                            <li><strong>Feedback:</strong> Sus opiniones son muy valiosas</li>
+                            <li><strong>Casos de éxito:</strong> Ejemplos de buenas prácticas</li>
+                        </ul>
+
+                        <div style="background: rgba(155, 89, 182, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid #9B59B6;">
+                            <h4 style="color: #9B59B6; margin-top: 0;">🚀 Programa Power Users:</h4>
+                            <p style="margin-bottom: 0;">Considera crear un programa especial para estos usuarios: acceso anticipado, feedback directo, reconocimiento interno.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Tecnologías -->
+    <div id="technologies-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">💡 Tecnologías - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('technologies-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>Esta tabla muestra las tecnologías y lenguajes de programación más utilizados con IA en el período.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>🔧 Datos de tecnologías:</h4>
+                        <ul>
+                            <li><strong>Lenguaje/Tecnología:</strong> Identificado por extensiones de archivo</li>
+                            <li><strong>Líneas Aceptadas:</strong> Código IA incorporado por tecnología</li>
+                            <li><strong>Usuarios:</strong> Número de desarrolladores que la usan</li>
+                            <li><strong>% del Total:</strong> Proporción respecto al total</li>
+                        </ul>
+
+                        <h4>📊 Ordenación:</h4>
+                        <p>Las tecnologías están ordenadas por <strong>líneas aceptadas</strong> de mayor a menor.</p>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🎯 Análisis estratégico:</h4>
+                        <ul>
+                            <li><strong>Stack Tecnológico:</strong> ¿Qué tecnologías domina el equipo?</li>
+                            <li><strong>Adopción IA:</strong> ¿Dónde funciona mejor la IA?</li>
+                            <li><strong>Especialización:</strong> Identificar expertos por tecnología</li>
+                            <li><strong>Formación:</strong> Detectar gaps tecnológicos</li>
+                        </ul>
+
+                        <div style="background: rgba(52, 152, 219, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--info);">
+                            <h4 style="color: var(--info); margin-top: 0;">📈 Insight:</h4>
+                            <p style="margin-bottom: 0;">Las tecnologías con más líneas IA aceptadas suelen ser aquellas donde la IA ofrece mejor soporte y sugerencias más precisas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda - Análisis de Cohortes -->
+    <div id="cohorts-help" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h3 class="help-modal-title">👥 Análisis de Cohortes - Información Detallada</h3>
+                <button class="help-modal-close" onclick="closeHelpModal('cohorts-help')">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <p><strong>El análisis de cohortes segmenta a los usuarios según su nivel de actividad y compromiso con la IA.</strong></p>
+                
+                <div class="help-content-grid">
+                    <div class="help-content-column">
+                        <h4>🏷️ Definición de cohortes:</h4>
+                        <ul>
+                            <li><strong>🔥 Heavy Users:</strong> >2000 líneas aceptadas</li>
+                            <li><strong>⚡ Active Users:</strong> 500-2000 líneas aceptadas</li>
+                            <li><strong>🌱 Light Users:</strong> 100-500 líneas aceptadas</li>
+                            <li><strong>👀 Explorers:</strong> 1-100 líneas aceptadas</li>
+                            <li><strong>😴 Inactive:</strong> 0 líneas aceptadas</li>
+                        </ul>
+
+                        <h4>📊 Métricas por cohorte:</h4>
+                        <ul>
+                            <li>Número de usuarios</li>
+                            <li>% del total de usuarios</li>
+                            <li>Promedio líneas/usuario</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content-column">
+                        <h4>🎯 Estrategias por cohorte:</h4>
+                        <ul>
+                            <li><strong>Heavy Users:</strong> Programas de reconocimiento, beta testing</li>
+                            <li><strong>Active Users:</strong> Formación avanzada, casos de uso complejos</li>
+                            <li><strong>Light Users:</strong> Tutoriales, mejores prácticas</li>
+                            <li><strong>Explorers:</strong> Onboarding, formación básica</li>
+                            <li><strong>Inactive:</strong> Campañas de activación, demos</li>
+                        </ul>
+
+                        <div style="background: rgba(231, 76, 60, 0.1); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; border-left: 4px solid var(--danger);">
+                            <h4 style="color: var(--danger); margin-top: 0;">⚠️ Objetivo:</h4>
+                            <p style="margin-bottom: 0;">Reducir usuarios inactivos y mover usuarios hacia cohortes más activas mediante formación y soporte dirigido.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -891,6 +1479,42 @@
             
             if (periodComparison) {
                 periodComparison.style.display = comparativaValida ? 'flex' : 'none';
+            }
+        });
+
+        // === FUNCIONES DE AYUDA ===
+        function openHelpModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+            }
+        }
+
+        function closeHelpModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto'; // Restaurar scroll del body
+            }
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('help-modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const activeModal = document.querySelector('.help-modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
             }
         });
     </script>

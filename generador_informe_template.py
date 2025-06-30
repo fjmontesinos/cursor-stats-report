@@ -816,13 +816,13 @@ def generar_tablas_html(metricas):
         badge_class = re.sub(r'[^a-zA-Z0-9_-]', '', str(extension))  # Sanitizar clase CSS
         tech_html += f"<tr><td><span class=\"badge {badge_class}\">{extension_sanitizada}</span></td><td class=\"text-right\">{formato_numero_espanol(lineas)}</td><td class=\"text-right\">{usuarios}</td></tr>\n                            "
     
-    # Modelos de IA
-    models_html = ""
-    total_modelos = metricas['rankings']['modelos_uso'].sum()
-    for modelo, uso in metricas['rankings']['modelos_uso'].items():
-        modelo_sanitizado = sanitizar_html(str(modelo))
-        porcentaje = (uso / total_modelos) * 100
-        models_html += f"<tr><td>{modelo_sanitizado}</td><td>{uso}</td><td>{formato_numero_espanol(porcentaje)}%</td></tr>\n                            "
+    # Modelos de IA - Comentado porque no se usa en la plantilla actual
+    # models_html = ""
+    # total_modelos = metricas['rankings']['modelos_uso'].sum()
+    # for modelo, uso in metricas['rankings']['modelos_uso'].items():
+    #     modelo_sanitizado = sanitizar_html(str(modelo))
+    #     porcentaje = (uso / total_modelos) * 100
+    #     models_html += f"<tr><td>{modelo_sanitizado}</td><td>{uso}</td><td>{formato_numero_espanol(porcentaje)}%</td></tr>\n                            "
     
     # Versiones de cliente
     versions_html = ""
@@ -864,7 +864,8 @@ def generar_tablas_html(metricas):
     for insight in metricas['insights']:
         insights_html += f"<li>{insight}</li>\n                "
     
-    # Datos para gráficos (sanitizados)
+    # Datos para gráficos (sanitizados) - Solo para gráfico de donut, no para tabla HTML
+    total_modelos = metricas['rankings']['modelos_uso'].sum()
     chart_models_labels = sanitizar_datos_para_json(list(metricas['rankings']['modelos_uso'].index))
     chart_models_data = sanitizar_datos_para_json([round((uso / total_modelos) * 100, 1) for uso in metricas['rankings']['modelos_uso'].values])
     
@@ -881,7 +882,7 @@ def generar_tablas_html(metricas):
         'TOP_PRODUCTIVIDAD': top_prod_html,
         'TOP_PETICIONES': top_pet_html,
         'TECNOLOGIAS_UTILIZADAS': tech_html,
-        'MODELOS_IA': models_html,
+        # 'MODELOS_IA': models_html,  # Comentado - no se usa en plantilla actual
         'VERSIONES_CLIENTE': versions_html,
         'USUARIOS_INACTIVOS_LISTA': usuarios_inactivos_html,
         'RECOMENDACIONES_ESTRATEGICAS': recomendaciones_html,
@@ -924,8 +925,6 @@ def generar_informe_desde_plantilla(metricas, archivo_plantilla="cursor_stats_re
         'PERIODO_ANTERIOR_INICIO': sanitizar_html(metricas['periodo']['anterior_inicio']),
         'PERIODO_ANTERIOR_FIN': sanitizar_html(metricas['periodo']['anterior_fin']),
         'COMPARATIVA_VALIDA': 'true' if metricas['periodo']['comparativa_valida'] else 'false',
-        'DIAS_ACTUAL': metricas['periodo']['dias_actual'],
-        'DIAS_ANTERIOR': metricas['periodo']['dias_anterior'],
         'TASA_ADOPCION': formato_numero_espanol(metricas['usuarios']['tasa_adopcion']),
         'USUARIOS_ACTIVOS': metricas['usuarios']['activos'],
         'TOTAL_USUARIOS': metricas['usuarios']['total'],
