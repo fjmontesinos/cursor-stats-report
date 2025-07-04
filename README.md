@@ -6,7 +6,15 @@
 
 Herramienta para generar informes completos de adopción y productividad de Cursor AI en equipos de desarrollo con **análisis comparativo temporal automático**.
 
-## 📋 Descripción
+## � Documentación Adicional
+
+📁 **Carpeta `doc/`**: Documentación completa del proyecto y plan de migración a Firebase:
+- [`doc/resumen_repositorio.md`](doc/resumen_repositorio.md) - Análisis detallado del proyecto actual
+- [`doc/plan_implementacion_firebase.md`](doc/plan_implementacion_firebase.md) - Plan completo de migración a Firebase
+- [`doc/guia_rapida.md`](doc/guia_rapida.md) - Comandos y referencias rápidas
+- [`doc/archivos_creados.md`](doc/archivos_creados.md) - Índice de toda la documentación
+
+## �📋 Descripción
 
 Este proyecto analiza los datos de uso de Cursor AI y genera informes HTML interactivos con métricas de productividad, adopción y análisis estratégico. Diseñado específicamente para equipos de desarrollo que quieren:
 
